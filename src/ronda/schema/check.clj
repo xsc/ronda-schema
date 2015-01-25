@@ -1,6 +1,7 @@
-(ns ronda.schema.checkers
-  (:require [ronda.schema
+(ns ronda.schema.check
+  (:require [ronda.schema.data
              [common :refer :all]
+             [coercer :refer [CoercerResult Coercer]]
              [errors :as e]
              [params :as p]
              [ring :as ring]]

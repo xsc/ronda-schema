@@ -1,6 +1,5 @@
-(ns ronda.schema.params
-  (:require [ronda.schema
-             [ring :as ring]]
+(ns ronda.schema.data.params
+  (:require [ronda.schema.data.ring :as ring]
             [schema.core :as s]
             [clojure.walk :as w]))
 

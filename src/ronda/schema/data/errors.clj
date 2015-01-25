@@ -1,5 +1,5 @@
-(ns ronda.schema.errors
-  (:require [ronda.schema.common :refer :all]
+(ns ronda.schema.data.errors
+  (:require [ronda.schema.data.common :refer :all]
             [schema.core :as s]))
 
 ;; ## Generic Error Schema

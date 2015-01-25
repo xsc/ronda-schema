@@ -1,5 +1,5 @@
-(ns ronda.schema.ring
-  (:require [ronda.schema.common :refer :all]
+(ns ronda.schema.data.ring
+  (:require [ronda.schema.data.common :refer :all]
             [schema.core :as s]))
 
 (def Status
@@ -25,12 +25,12 @@
 
 (defn method-schema
   "Create schema to check whether a request has an allowed method."
-  [requests]
+  [methods]
   (flexible-schema
-    {:request-method (apply s/enum (keys requests))}))
+    {:request-method (apply s/enum methods)}))
 
 (defn status-schema
   "Create schema to check whether a response has an allowed status."
-  [{:keys [responses]}]
+  [statuses]
   (flexible-schema
-    {:status (apply s/enum (keys responses))}))
+    {:status (apply s/enum statuses)}))

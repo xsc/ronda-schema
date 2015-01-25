@@ -1,5 +1,7 @@
-(ns ronda.schema.coercer
-  (:require [ronda.schema.common :refer :all]
+(ns ronda.coerce
+  (:require [ronda.schema.data
+             [coercer :refer [Coercer CoercerResult]]
+             [common :refer :all]]
             [schema
              [core :as s]
              [coerce :as coerce]

@@ -1,4 +1,4 @@
-(ns ronda.schema.common
+(ns ronda.schema.data.common
   (:require [schema.core :as s]
             [clojure.walk :as w]))
 
@@ -61,18 +61,3 @@
   (if (contains? m k)
     (update-in m [k] #(apply f % args))
     m))
-
-;; ## Coercer
-
-(def CoercerResult
-  (s/either
-    {:error-form s/Any}
-    {:value s/Any}))
-
-(def Coercer
-  "Schema for coercer functions."
-  (s/=> CoercerResult s/Any))
-
-(def CoercerFactory
-  "Schema for functions that create coercers."
-  (s/=> Coercer SchemaValue))

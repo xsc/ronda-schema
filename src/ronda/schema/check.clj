@@ -10,7 +10,10 @@
 ;; ## General
 
 (s/defn check-constraint
-  :- (s/either e/ResponseValidationError e/RequestValidationError)
+  :- (s/maybe
+       (s/either
+         e/ResponseValidationError
+         e/RequestValidationError))
   "Check constraint schema against value."
   [constraint :- (s/maybe SchemaValue)
    value      :- s/Any

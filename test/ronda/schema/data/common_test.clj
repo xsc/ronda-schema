@@ -1,6 +1,6 @@
-(ns ronda.schema.common-test
+(ns ronda.schema.data.common-test
   (:require [midje.sweet :refer :all]
-            [ronda.schema.common :as r]
+            [ronda.schema.data.common :as r]
             [schema.core :as s]))
 
 (s/set-fn-validation! true)

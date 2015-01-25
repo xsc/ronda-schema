@@ -1,6 +1,6 @@
-(ns ronda.schema.response-test
+(ns ronda.schema.data.response-test
   (:require [midje.sweet :refer :all]
-            [ronda.schema
+            [ronda.schema.data
              [response :as r]
              [common :refer :all]]
             [schema

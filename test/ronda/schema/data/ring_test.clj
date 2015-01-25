@@ -1,6 +1,6 @@
-(ns ronda.schema.ring-test
+(ns ronda.schema.data.ring-test
   (:require [midje.sweet :refer :all]
-            [ronda.schema.ring :as r]
+            [ronda.schema.data.ring :as r]
             [schema.core :as s]))
 
 (s/set-fn-validation! true)

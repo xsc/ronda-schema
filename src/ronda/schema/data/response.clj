@@ -13,7 +13,7 @@
 ;; request that prompted the response. Thus, a schema has to represent:
 ;;
 ;; - a map schema for headers (string -> value).
-;; - a map schema for the whole-response constraint.
+;; - a schema for the whole-response constraint.
 ;; - a schema for a map with the keys `:request`/`:response` representing
 ;;   the request/response cycle constraints.
 ;; - a schema for the response body.
@@ -26,7 +26,7 @@
 (def RawResponseSchema
   "Structure of HTTP response schemas."
   (optional-keys
-    {:headers    MapSchemaValue ;; headers (string - value)
+    {:headers    MapSchemaValue ;; headers (string -> value)
      :body       SchemaValue    ;; body
      :constraint SchemaValue    ;; whole-response constraint
      :semantics  SchemaValue})) ;; request/response schema (:request/:response)
@@ -94,7 +94,9 @@
   "Prepare responses for actual validation."
   [rs :- RawResponses
    coercer-factory :- (s/maybe CoercerFactory)]
-  (let [responses (compile-all-responses rs coercer-factory)]
-    {:statuses (compile-statuses rs)
-     :default  (get responses Wildcard)
-     :schemas  (dissoc responses Wildcard)}))
+  (if (empty? rs)
+    (recur {Wildcard {}} coercer-factory)
+    (let [responses (compile-all-responses rs coercer-factory)]
+      {:statuses (compile-statuses rs)
+       :default  (get responses Wildcard)
+       :schemas  (dissoc responses Wildcard)})))

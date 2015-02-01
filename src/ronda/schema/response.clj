@@ -56,8 +56,8 @@
   ([responses :- RawResponses
     coercer-factory :- (s/maybe CoercerFactory)]
    (let [rs (compile-responses responses coercer-factory)]
-     (fn f
+     (fn validator
        ([response]
-        (f response nil))
+        (validator response nil))
        ([response request]
         (check-response rs response request ))))))

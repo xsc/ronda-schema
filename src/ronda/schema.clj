@@ -4,11 +4,19 @@
              request
              response]
             [ronda.schema.data
-             errors]))
+             errors
+             request
+             response]))
 
 (import-vars
   [ronda.schema.data.errors
    error?]
+  [ronda.schema.data.request
+   compile-request-schema
+   compile-requests]
+  [ronda.schema.data.response
+   compile-response-schema
+   compile-responses]
   [ronda.schema.request
    check-single-request
    check-request

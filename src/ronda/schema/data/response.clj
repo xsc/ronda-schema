@@ -70,7 +70,8 @@
 (s/defn ^:private compile-statuses :- SchemaValue
   "Create schema that will match statuses."
   [responses :- RawResponses]
-  (let [statuses (normalize-wildcard (mapcat as-seq (keys responses)))]
+  (let [statuses (normalize-wildcard
+                   (mapcat as-seq (keys responses)))]
     (if (wildcard? statuses)
       s/Any
       {:status (apply s/enum statuses)})))

@@ -20,10 +20,9 @@
                      schema
                      (or response {:status 404}))]
      (or (if (e/error? response') response')
-         (c/check-constraint
+         (c/check-response-constraint
            constraint
-           response'
-           :response-constraint-failed)
+           response')
          (c/check-semantics
            semantics
            request

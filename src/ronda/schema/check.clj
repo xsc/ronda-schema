@@ -78,6 +78,15 @@
     response
     :response-validation-failed))
 
+(s/defn check-response-constraint :- (s/maybe e/ResponseValidationError)
+  "Check constraint on the given response."
+  [constraint :- (s/maybe SchemaValue)
+   value      :- s/Any]
+  (check-constraint
+    constraint
+    value
+    :response-constraint-failed))
+
 ;; ## Request
 
 (s/defn check-method :- (s/maybe e/RequestValidationError)
@@ -109,3 +118,12 @@
     schema
     request
     :request-validation-failed))
+
+(s/defn check-request-constraint :- (s/maybe e/RequestValidationError)
+  "Check constraint on the given response."
+  [constraint :- (s/maybe SchemaValue)
+   value      :- s/Any]
+  (check-constraint
+    constraint
+    value
+    :request-constraint-failed))

@@ -16,10 +16,10 @@
     response :- (s/maybe ring/Response)
     request  :- (s/maybe ring/Request)]
    (let [{:keys [schema coercer constraint semantics]} rschema
-         response' (c/check-response-with-coercion
-                     coercer
-                     schema
-                     (or response {:status 404}))]
+         response' (->> (if response
+                          (ring/normalize-response response)
+                          {:status 404})
+                        (c/check-response-with-coercion coercer schema))]
      (or (if (e/error? response') response')
          (c/check-response-constraint
            constraint

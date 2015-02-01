@@ -3,7 +3,6 @@
              [common :refer :all]
              [coercer :refer [CoercerResult Coercer]]
              [errors :as e]
-             [params :as p]
              [ring :as ring]]
             [schema.core :as s]))
 

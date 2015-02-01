@@ -3,7 +3,9 @@
             [ronda.schema.data
              [errors :as e]
              [request :refer [compile-requests]]]
-            [ronda.schema.request :refer :all]
+            [ronda.schema
+             [request :refer :all]
+             [response :refer [check-response]]]
             [ronda.coerce :refer [coercer-factory]]
             [schema.core :as s]))
 
@@ -66,10 +68,13 @@
 (fact "about successful request validation."
       (let [req {:request-method :get
                  :query-params {:length 8}}
-            r (check-request request-schema req)]
+            r (check-request request-schema req)
+            responses (possible-responses r)]
         (:error r) => nil?
         r => (assoc req :params {:length 8} :headers {})
-        (-> r possible-responses :schemas keys) => [200]))
+        (-> responses :schemas keys) => [200]
+        (:error
+          (check-response responses {:status 200} r)) => :response-validation-failed))
 
 (let [validate-coerce #(check-request coercing-schema %)]
   (fact "about request coercion exception."

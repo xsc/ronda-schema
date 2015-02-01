@@ -57,16 +57,29 @@
 
 ;; ## Compile
 
+(s/defn ^:private compile-method
+  [{:keys [method]} :- RawRequestSchema]
+  (let [methods (normalize-wildcard (as-seq method))]
+    (if (wildcard? methods)
+      {:request-method s/Keyword}
+      {:request-method (apply s/enum methods)})))
+
+(s/defn ^:private compile-base-schema :- SchemaValue
+  "Create the base schema."
+  [schema :- RawRequestSchema]
+  (-> schema
+      (select-keys [:params :headers :query-string :body])
+      (merge (compile-method schema))
+      (update-in-existing :headers flexible-schema s/Str)
+      (update-in-existing :params flexible-schema s/Keyword)
+      (allow-any)))
+
 (s/defn compile-request-schema :- RequestSchema
-  "Prepare the different pars of a raw request schema for actual
-   validation."
+  "Prepare the different pars of a raw request schema for
+   actual validation."
   [schema          :- RawRequestSchema
    coercer-factory :- (s/maybe CoercerFactory)]
-  (let [base (-> schema
-                 (select-keys [:params :headers :query-string :body])
-                 (update-in-existing :headers flexible-schema s/Str)
-                 (update-in-existing :params flexible-schema s/Keyword)
-                 (allow-any))]
+  (let [base (compile-base-schema schema)]
     {:schema  base
      :coercer (if coercer-factory
                 (coercer-factory base))

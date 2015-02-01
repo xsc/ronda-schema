@@ -52,6 +52,12 @@
     (s/both s constraint)
     s))
 
+(defn seq-or-single
+  "Allow either a seq with values matching the given schema
+   or a single value."
+  [schema]
+  (s/either schema [schema]))
+
 ;; ## Helper
 
 (defn update-in-existing
@@ -61,3 +67,24 @@
   (if (contains? m k)
     (update-in m [k] #(apply f % args))
     m))
+
+;; ## Wildcard
+
+(def Wildcard
+  "The wildcard value."
+  :*)
+
+(defn allow-wildcard
+  "Allow wildcard value in addition to the given schema."
+  [schema]
+  (s/either
+    (s/eq Wildcard)
+    schema))
+
+(defn wildcard?
+  "Does the given value (either a literal or a seq) represent
+   the wildcard?"
+  [v]
+  (if (sequential? v)
+    (some #{Wildcard} v)
+    (recur [v])))

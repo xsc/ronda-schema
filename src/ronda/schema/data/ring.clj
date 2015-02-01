@@ -75,7 +75,8 @@
   [request :- Request]
   (-> request
       (normalize-headers)
-      (normalize-params)))
+      (normalize-params)
+      (merge-params)))
 
 (s/defn normalize-response :- Response
   "Normalize response in preparation of validation."

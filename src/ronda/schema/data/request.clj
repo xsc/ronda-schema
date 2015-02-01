@@ -40,8 +40,7 @@
 
 (def RequestSchema
   "Compiled request schema."
-  {:methods    SchemaValue
-   :schema     SchemaValue
+  {:schema     SchemaValue
    :coercer    (s/maybe Coercer)
    :constraint SchemaValue
    :responses  r/Responses})
@@ -52,32 +51,23 @@
 
 (def Requests
   "Compiled allowed requests."
-  {:default (s/maybe RequestSchema)
+  {:methods SchemaValue
+   :default (s/maybe RequestSchema)
    :schemas {ring/Method RequestSchema}})
 
 ;; ## Compile
-
-(s/defn ^:private compile-methods :- SchemaValue
-  "Create schema that will match methods"
-  [schema :- RawRequestSchema]
-  (let [methods (as-seq (or (:method schema) :*))]
-    (if (wildcard? methods)
-      s/Any
-      {:request-method (apply s/enum methods)})))
 
 (s/defn compile-request-schema :- RequestSchema
   "Prepare the different pars of a raw request schema for actual
    validation."
   [schema          :- RawRequestSchema
    coercer-factory :- (s/maybe CoercerFactory)]
-  (let [methods (compile-methods schema)
-        base (-> schema
+  (let [base (-> schema
                  (select-keys [:params :headers :query-string :body])
                  (update-in-existing :headers flexible-schema s/Str)
                  (update-in-existing :params flexible-schema s/Keyword)
                  (allow-any))]
-    {:methods methods
-     :schema  base
+    {:schema  base
      :coercer (if coercer-factory
                 (coercer-factory base))
      :constraint (or (:constraint schema) s/Any)
@@ -85,16 +75,23 @@
                   (or (:responses schema) {})
                   coercer-factory)}))
 
+(s/defn ^:private compile-methods :- SchemaValue
+  "Create schema that will match methods"
+  [schemas :- RawRequests]
+  (let [methods (normalize-wildcard
+                  (mapcat (comp as-seq :method) schemas))]
+    (if (wildcard? methods)
+      s/Any
+      {:request-method (apply s/enum methods)})))
+
 (s/defn ^:private compile-all-requests
+  "Prepare all the given requests for validation"
   [schemas         :- RawRequests
    coercer-factory :- (s/maybe CoercerFactory)]
-  (->> (for [{:keys [methods] :as schema} schemas
-             :let [methods' (or methods [:*])
-                   r (compile-request-schema schema coercer-factory)]
-             method (if (wildcard? methods')
-                      [:*]
-                      (as-seq methods'))]
-         [method r])
+  (->> (for [{:keys [method] :as schema} schemas
+             :let [r (compile-request-schema schema coercer-factory)]
+             method' (normalize-wildcard method)]
+         [method' r])
        (into {})))
 
 (s/defn compile-requests :- Requests
@@ -104,5 +101,6 @@
   (if (empty? schemas)
     (recur [{}] coercer-factory)
     (let [requests (compile-all-requests schemas coercer-factory)]
-      {:default (get requests Wildcard)
+      {:methods (compile-methods schemas)
+       :default (get requests Wildcard)
        :schemas (dissoc requests Wildcard)})))

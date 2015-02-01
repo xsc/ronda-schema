@@ -61,7 +61,7 @@
 (defn as-seq
   "Convert value to seq if it's not already."
   [v]
-  (if (sequential? v)
+  (if (or (nil? v) (sequential? v))
     v
     [v]))
 
@@ -99,3 +99,12 @@
    the wildcard?"
   [v]
   (some #{Wildcard} (as-seq v)))
+
+(defn normalize-wildcard
+  "Convert to seq. If empty or wildcard is contained,
+   return a single-element seq with just the wildcard."
+  [v]
+  (let [vs (as-seq v)]
+    (if (or (empty? vs) (wildcard? vs))
+      [Wildcard]
+      vs)))

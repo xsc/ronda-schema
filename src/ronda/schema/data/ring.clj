@@ -23,14 +23,8 @@
   "Schema for Ring Handlers."
   (s/=> Response Request))
 
-(defn method-schema
-  "Create schema to check whether a request has an allowed method."
-  [methods]
-  (flexible-schema
-    {:request-method (apply s/enum methods)}))
-
-(defn status-schema
-  "Create schema to check whether a response has an allowed status."
-  [statuses]
-  (flexible-schema
-    {:status (apply s/enum statuses)}))
+(def Method
+  "Schema for Ring Methods."
+  (s/enum
+    :get :head :options
+    :put :post :delete))

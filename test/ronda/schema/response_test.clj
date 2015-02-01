@@ -34,12 +34,12 @@
 ;; ## Tests
 
 (fact "about response status failure."
-      (let [r (check response-schemas {:status 403})]
+      (let [r (check-response response-schemas {:status 403})]
         (:error r) => :status-not-allowed))
 
 (tabular
   (fact "about response validation failure."
-        (let [r (check response-schemas (assoc ?response :status 200))]
+        (let [r (check-response response-schemas (assoc ?response :status 200))]
           (:error r) => :response-validation-failed))
   ?response
   {}
@@ -48,7 +48,7 @@
   {:headers {"x-length" 8}, :body nil})
 
 (fact "about response constraint failure."
-      (let [r (check
+      (let [r (check-response
                 response-schemas
                 {:status 200
                  :headers {"x-length" 8}
@@ -56,7 +56,7 @@
         (:error r) => :response-constraint-failed))
 
 (fact "about response semantics validation failure."
-      (let [r (check
+      (let [r (check-response
                 response-schemas
                 {:status 200
                  :headers {"x-length" 7}
@@ -70,7 +70,7 @@
             :body "12345678"}]
   (tabular
     (fact "about successful response validation."
-        (check
+        (check-response
           (compile-responses ?schemas nil)
           resp
           {:request-method :get

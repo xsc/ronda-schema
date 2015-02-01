@@ -75,3 +75,26 @@
                     response)]
             (-> (u/validation-error-explain r)
                 second first) => 'valid-body?))))
+
+(fact "about compiling multiple responses (no default)."
+      (let [{:keys [statuses default schemas]} (r/compile-responses
+                                                 {[200 201 202] response
+                                                  400 {}}
+                                                 nil)]
+        (set (keys schemas)) => #{200 201 202 400}
+        (map
+          #(s/check (:status statuses) %)
+          [200 201 202 400]) => (has every? nil?)
+        (map
+          #(s/check (:status statuses) %)
+          [500 404]) => (has not-any? nil?)
+        default => nil?))
+
+(fact "about compiling multiple responses (with default)."
+      (let [{:keys [statuses default schemas]} (r/compile-responses
+                                                 {200 response
+                                                  [:*] {}}
+                                                 nil)]
+        (set (keys schemas)) => #{200}
+        statuses => s/Any
+        default =not=> nil?))

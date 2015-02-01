@@ -1,6 +1,7 @@
 (ns ronda.schema.response
   (:require [ronda.schema.check :as c]
             [ronda.schema.data
+             [common :refer :all]
              [errors :as e]
              [ring :as ring]
              [response :refer :all]]
@@ -38,10 +39,10 @@
   ([responses :- Responses
     response  :- (s/maybe ring/Response)
     request   :- (s/maybe ring/Request)]
-   (let [{:keys [status-schema schemas]} responses
+   (let [{:keys [statuses default schemas]} responses
          {:keys [status] :as r} (or response {:status 404})]
-     (or (c/check-status status-schema r)
+     (or (c/check-status statuses r)
          (check-response
-           (get schemas status)
+           (get schemas status default)
            response
            request)))))

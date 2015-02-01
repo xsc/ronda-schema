@@ -11,21 +11,24 @@
 
 ;; ## Fixtures
 
+(def response
+  {:headers {"x-length" s/Int}
+   :body s/Str
+   :constraint
+   (s/pred
+     #(= (-> % :headers (get "x-length"))
+         (-> % :body count))
+     'length-consistent?)
+   :semantics
+   (s/pred
+     (fn [{:keys [request response]}]
+       (= (-> request :query-params :length)
+          (-> response :body count)))
+     'requested-length-returned?)})
+
 (def response-schemas
   (compile-responses
-    {200 {:headers {"x-length" s/Int}
-          :body s/Str
-          :constraint
-          (s/pred
-            #(= (-> % :headers (get "x-length"))
-                (-> % :body count))
-            'length-consistent?)
-          :semantics
-          (s/pred
-            (fn [{:keys [request response]}]
-              (= (-> request :query-params :length)
-                 (-> response :body count)))
-            'requested-length-returned?)}}
+    {200 response}
     nil))
 
 ;; ## Tests
@@ -62,13 +65,19 @@
                  :query-params {:length 8}})]
         (:error r) => :semantics-failed))
 
-(fact "about successful response validation."
-      (let [resp {:status 200
-                  :headers {"x-length" 8}
-                  :body "12345678"}
-            r (check
-                response-schemas
-                resp
-                {:request-method :get
-                 :query-params {:length 8}})]
-        r => resp))
+(let [resp {:status 200
+            :headers {"x-length" 8}
+            :body "12345678"}]
+  (tabular
+    (fact "about successful response validation."
+        (check
+          (compile-responses ?schemas nil)
+          resp
+          {:request-method :get
+           :query-params {:length 8}}) => resp)
+    ?schemas
+    {200 response}
+    {[200 202] response}
+    {200 response, 202 {}}
+    {:* response}
+    {201 {} :* response}))

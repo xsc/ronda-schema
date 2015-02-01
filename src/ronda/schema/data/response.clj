@@ -40,12 +40,15 @@
 
 (def RawResponses
   "A map of possible responses and their schemas."
-  {ring/Status RawResponseSchema})
+  {(seq-or-single
+     (allow-wildcard
+       ring/Status)) RawResponseSchema})
 
 (def Responses
   "A map of possible responses and their compiled schemas."
-  {:status-schema SchemaValue
-   :schemas {ring/Status ResponseSchema}})
+  {:statuses SchemaValue
+   :default  (s/maybe SchemaValue)
+   :schemas  {ring/Status ResponseSchema}})
 
 ;; ## Compile
 
@@ -64,11 +67,34 @@
      :constraint (or (:constraint schema) s/Any)
      :semantics (or (:semantics schema) s/Any)}))
 
+(s/defn ^:private compile-statuses :- SchemaValue
+  "Create schema that will match statuses."
+  [responses :- RawResponses]
+  (let [statuses (distinct (mapcat as-seq (keys responses)))]
+    (if (wildcard? statuses)
+      s/Any
+      {:status (apply s/enum statuses)})))
+
+(s/defn ^:private compile-all-responses
+  :- {(allow-wildcard ring/Status) ResponseSchema}
+  "Create map associating statuses"
+  [responses :- RawResponses
+   coercer-factory :- (s/maybe CoercerFactory)]
+  (->> (for [[statuses schema] responses
+             :let [r (compile-response-schema
+                       schema
+                       coercer-factory)]
+             status (if (wildcard? statuses)
+                      [:*]
+                      (as-seq statuses))]
+         [status r])
+       (into {})))
+
 (s/defn compile-responses :- Responses
   "Prepare responses for actual validation."
   [rs :- RawResponses
-   coercer :- (s/maybe CoercerFactory)]
-  {:status-schema (ring/status-schema (keys rs))
-   :schemas       (->> (for [[status schema] rs]
-                         [status (compile-response-schema schema coercer)])
-                       (into {}))})
+   coercer-factory :- (s/maybe CoercerFactory)]
+  (let [responses (compile-all-responses rs coercer-factory)]
+    {:statuses (compile-statuses rs)
+     :default  (get responses Wildcard)
+     :schemas  (dissoc responses Wildcard)}))

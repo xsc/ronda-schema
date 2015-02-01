@@ -11,8 +11,7 @@
 ;; ## Fixtures
 
 (def request
-  {:method [:get :put]
-   :params {:id s/Int, :length s/Int}
+  {:params {:id s/Int, :length s/Int}
    :query-string (s/pred
                    #(>= (count %) 8)
                    'query-string-long?)
@@ -65,12 +64,6 @@
      :query-string "length=7"}
     [:headers "accept"]
 
-    {:request-method :post
-     :headers {"accept" "text/plain;text/xml"}
-     :params {:id 7, :length 7}
-     :query-string "length=7"}
-    [:request-method]
-
     {:request-method :get
      :headers {"accept" "text/plain;text/xml"}
      :params {:id "7", :length 7}
@@ -97,8 +90,8 @@
 (fact "about compiling multiple schemas (no default)."
       (let [{:keys [methods default schemas]}
             (r/compile-requests
-              [{:method :get}
-               {:method :post}]
+              {:get {}
+               :post {}}
               nil)]
         (s/check methods {:request-method :get}) => nil?
         (s/check methods {:request-method :post}) => nil?
@@ -110,12 +103,12 @@
 (fact "about compiling multiple schemas (with default)."
       (let [{:keys [methods default schemas]}
             (r/compile-requests
-              [{:method [:get :post]}
-               {}]
+              {[:get :post] {}
+               :* {}}
               nil)]
         (s/check methods {:request-method :get}) => nil?
         (s/check methods {:request-method :post}) => nil?
-        (s/check methods {:request-method :delete}) =not=> nil?
+        (s/check methods {:request-method :delete}) => nil?
         default =not=> nil?
         (count schemas) => 2
         (set (keys schemas)) => #{:get :post}))

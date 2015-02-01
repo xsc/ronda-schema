@@ -28,10 +28,7 @@
 (def RawRequestSchema
   "Structure of HTTP request schemas."
   (optional-keys
-    {:method         (seq-or-single
-                       (allow-wildcard
-                         ring/Method)) ;; request method (default: ANY)
-     :params         MapSchemaValue    ;; route/query/form params (keyword -> value)
+    {:params         MapSchemaValue    ;; route/query/form params (keyword -> value)
      :headers        MapSchemaValue    ;; headers (string -> value)
      :query-string   SchemaValue       ;; query string constraint (string)
      :body           SchemaValue       ;; body constraint
@@ -47,7 +44,9 @@
 
 (def RawRequests
   "Schema for representation of multiple allowed requests."
-  [RawRequestSchema])
+  {(seq-or-single
+     (allow-wildcard
+       ring/Method)) RawRequestSchema})
 
 (def Requests
   "Compiled allowed requests."
@@ -57,19 +56,11 @@
 
 ;; ## Compile
 
-(s/defn ^:private compile-method
-  [{:keys [method]} :- RawRequestSchema]
-  (let [methods (normalize-wildcard (as-seq method))]
-    (if (wildcard? methods)
-      {:request-method s/Keyword}
-      {:request-method (apply s/enum methods)})))
-
 (s/defn ^:private compile-base-schema :- SchemaValue
   "Create the base schema."
   [schema :- RawRequestSchema]
   (-> schema
       (select-keys [:params :headers :query-string :body])
-      (merge (compile-method schema))
       (update-in-existing :headers flexible-schema s/Str)
       (update-in-existing :params flexible-schema s/Keyword)
       (allow-any)))
@@ -92,7 +83,7 @@
   "Create schema that will match methods"
   [schemas :- RawRequests]
   (let [methods (normalize-wildcard
-                  (mapcat (comp as-seq :method) schemas))]
+                  (mapcat as-seq (keys schemas)))]
     (if (wildcard? methods)
       s/Any
       {:request-method (apply s/enum methods)})))
@@ -101,8 +92,10 @@
   "Prepare all the given requests for validation"
   [schemas         :- RawRequests
    coercer-factory :- (s/maybe CoercerFactory)]
-  (->> (for [{:keys [method] :as schema} schemas
-             :let [r (compile-request-schema schema coercer-factory)]
+  (->> (for [[method schema] schemas
+             :let [r (compile-request-schema
+                       schema
+                       coercer-factory)]
              method' (normalize-wildcard method)]
          [method' r])
        (into {})))

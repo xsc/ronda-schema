@@ -14,8 +14,7 @@
 ;; ## Fixtures
 
 (def request
-  {:method :get
-   :params {:length s/Int}
+  {:params {:length s/Int}
    :constraint (s/pred
                  #(-> % :params :length pos?)
                  'length-positive?)
@@ -34,10 +33,10 @@
                       'requested-length-returned?)}}})
 
 (def request-schema
-  (compile-requests [request] nil))
+  (compile-requests {:get request} nil))
 
 (def coercing-schema
-  (compile-requests [request] coercer-factory))
+  (compile-requests {:get request} coercer-factory))
 
 ;; ## Tests
 

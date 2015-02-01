@@ -7,11 +7,11 @@
              [response :refer :all]]
             [schema.core :as s]))
 
-(s/defn check-response
+(s/defn check-single-response
   "Check the given request/response pair against the given schema."
-  ([responses :- Responses
-    response  :- (s/maybe ring/Response)]
-   (check-response responses response nil))
+  ([rschema  :- ResponseSchema
+    response :- (s/maybe ring/Response)]
+   (check-single-response rschema response nil))
   ([rschema  :- ResponseSchema
     response :- (s/maybe ring/Response)
     request  :- (s/maybe ring/Request)]
@@ -30,19 +30,19 @@
            response')
          (if response response')))))
 
-(s/defn check
+(s/defn check-response
   "Check response against the given schemas (based on the response status),
    coercing if desired."
   ([responses :- Responses
     response  :- (s/maybe ring/Response)]
-   (check responses response nil))
+   (check-response responses response nil))
   ([responses :- Responses
     response  :- (s/maybe ring/Response)
     request   :- (s/maybe ring/Request)]
    (let [{:keys [statuses default schemas]} responses
          {:keys [status] :as r} (or response {:status 404})]
      (or (c/check-status statuses r)
-         (check-response
+         (check-single-response
            (get schemas status default)
            response
            request)))))

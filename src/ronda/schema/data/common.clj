@@ -58,6 +58,13 @@
   [schema]
   (s/either schema [schema]))
 
+(defn as-seq
+  "Convert value to seq if it's not already."
+  [v]
+  (if (sequential? v)
+    v
+    [v]))
+
 ;; ## Helper
 
 (defn update-in-existing
@@ -81,10 +88,14 @@
     (s/eq Wildcard)
     schema))
 
+(defn wildcarded-seq
+  "Schema that allows a seq of values matching the given schema or
+   the wildcard value."
+  [schema]
+  [(allow-wildcard schema)])
+
 (defn wildcard?
   "Does the given value (either a literal or a seq) represent
    the wildcard?"
   [v]
-  (if (sequential? v)
-    (some #{Wildcard} v)
-    (recur [v])))
+  (some #{Wildcard} (as-seq v)))

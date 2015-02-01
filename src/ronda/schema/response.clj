@@ -2,6 +2,7 @@
   (:require [ronda.schema.check :as c]
             [ronda.schema.data
              [common :refer :all]
+             [coercer :refer [CoercerFactory]]
              [errors :as e]
              [ring :as ring]
              [response :refer :all]]
@@ -46,3 +47,17 @@
            (get schemas status default)
            response
            request)))))
+
+(s/defn response-validator
+  "Create function, taking a response and an optional request and
+   validating (by status) against the given schemas."
+  ([responses :- RawResponses]
+   (response-validator responses nil))
+  ([responses :- RawResponses
+    coercer-factory :- (s/maybe CoercerFactory)]
+   (let [rs (compile-responses responses coercer-factory)]
+     (fn f
+       ([response]
+        (f response nil))
+       ([response request]
+        (check-response rs response request ))))))

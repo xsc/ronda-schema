@@ -92,7 +92,9 @@
   "Check method schema against request."
   [method-schema :- SchemaValue
    request       :- ring/Request]
-  (e/check-for-error request :method-not-allowed method-schema))
+  (e/check-for-error
+    (select-keys request [:request-method])
+    :method-not-allowed method-schema))
 
 (s/defn check-params :- (s/maybe e/RequestValidationError)
   "Check params schema against request."

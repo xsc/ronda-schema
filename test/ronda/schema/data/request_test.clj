@@ -20,16 +20,18 @@
                  #(= (-> % :route-params :id)
                      (-> % :query-params :length))
                  'weird-constraint?)
-   :responses {200 {}}})
+   :responses {200 {}}
+   :description "Schema"})
 
 ;; ## Tests
 
-(let [{:keys [schema coercer constraint responses]}
+(let [{:keys [schema coercer constraint responses metadata]}
       (r/compile-request-schema request nil)]
   (fact "about request schema compiling."
         coercer => nil?
         constraint => some?
         responses => map?
+        metadata => {:description "Schema"}
         (-> responses :schemas keys) => [200]
         (:default responses) => nil?)
   (tabular

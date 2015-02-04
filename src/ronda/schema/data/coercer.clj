@@ -14,3 +14,10 @@
 (def CoercerFactory
   "Schema for functions that create coercers."
   (s/=> Coercer SchemaValue))
+
+(s/defn apply-factory :- (s/maybe Coercer)
+  "If coercer factory is not `nil`, use it."
+  [coercer-factory :- (s/maybe CoercerFactory)
+   schema :- SchemaValue]
+  (if coercer-factory
+    (coercer-factory schema)))

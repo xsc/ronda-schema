@@ -15,6 +15,7 @@
   {:headers {"content-type" (s/eq "text/plain")}
    :body s/Str
    :constraint (s/pred #(= (count (:body %)) 8) 'valid-body?)
+   :description "Response"
    :semantics s/Any})
 
 ;; ## Compile Tests
@@ -26,7 +27,8 @@
       (let [r (r/compile-response-schema response nil)]
         (:constraint r) =not=> nil?
         (:schema r) =not=> nil?
-        (:semantics r) =not=> nil?)
+        (:semantics r) =not=> nil?
+        (:metadata r) => {:description "Response"})
       (let [r (r/compile-response-schema {} nil)]
         (:constraint r) => s/Any
         (:semantics r) => s/Any

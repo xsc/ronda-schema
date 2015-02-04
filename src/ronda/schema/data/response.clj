@@ -1,7 +1,7 @@
 (ns ronda.schema.data.response
   (:require [ronda.schema.data
              [common :refer :all]
-             [coercer :refer [Coercer CoercerFactory]]
+             [coercer :as c]
              [ring :as ring]]
             [schema.core :as s]))
 
@@ -23,20 +23,28 @@
 
 ;; ## Schema
 
+(def ^:private schema-structure
+  {:headers    MapSchemaValue ;; headers (string -> value)
+   :body       SchemaValue    ;; body
+   :constraint SchemaValue    ;; whole-response constraint
+   :semantics  SchemaValue})  ;; request/response schema (:request/:response)
+
+(def ^:private structural-keys
+  (keys schema-structure))
+
 (def RawResponseSchema
   "Structure of HTTP response schemas."
-  (optional-keys
-    {:headers    MapSchemaValue ;; headers (string -> value)
-     :body       SchemaValue    ;; body
-     :constraint SchemaValue    ;; whole-response constraint
-     :semantics  SchemaValue})) ;; request/response schema (:request/:response)
+  (allow-any
+    (optional-keys
+      schema-structure)))
 
 (def ResponseSchema
   "A compiled HTTP response schema."
   {:schema     MapSchemaValue
-   :coercer    (s/maybe Coercer)
+   :coercer    (s/maybe c/Coercer)
    :constraint SchemaValue
-   :semantics  SchemaValue})
+   :semantics  SchemaValue
+   :metadata   {s/Any s/Any}})
 
 (def RawResponses
   "A map of possible responses and their schemas."
@@ -52,20 +60,25 @@
 
 ;; ## Compile
 
+(s/defn ^:private collect-metadata :- {s/Any s/Any}
+  "Collect metadata by removing all the schema-specific keys."
+  [schema :- RawResponseSchema]
+  (apply dissoc schema structural-keys))
+
 (s/defn compile-response-schema :- ResponseSchema
   "Prepare the different parts of a raw response schema for actual
    validation."
   [schema          :- RawResponseSchema
-   coercer-factory :- (s/maybe CoercerFactory)]
+   coercer-factory :- (s/maybe c/CoercerFactory)]
   (let [base (-> schema
                  (select-keys [:headers :body])
                  (update-in-existing :headers flexible-schema s/Str)
                  (allow-any))]
-    {:schema base
-     :coercer (if coercer-factory
-                (coercer-factory base))
+    {:schema     base
+     :coercer    (c/apply-factory coercer-factory base)
      :constraint (or (:constraint schema) s/Any)
-     :semantics (or (:semantics schema) s/Any)}))
+     :semantics  (or (:semantics schema) s/Any)
+     :metadata   (collect-metadata schema)}))
 
 (s/defn ^:private compile-statuses :- SchemaValue
   "Create schema that will match statuses."
@@ -80,7 +93,7 @@
   :- {(allow-wildcard ring/Status) ResponseSchema}
   "Create map associating statuses"
   [responses :- RawResponses
-   coercer-factory :- (s/maybe CoercerFactory)]
+   coercer-factory :- (s/maybe c/CoercerFactory)]
   (->> (for [[statuses schema] responses
              :let [r (compile-response-schema
                        schema
@@ -94,7 +107,7 @@
 (s/defn compile-responses :- Responses
   "Prepare responses for actual validation."
   [rs :- RawResponses
-   coercer-factory :- (s/maybe CoercerFactory)]
+   coercer-factory :- (s/maybe c/CoercerFactory)]
   (if (empty? rs)
     (recur {Wildcard {}} coercer-factory)
     (let [responses (compile-all-responses rs coercer-factory)]

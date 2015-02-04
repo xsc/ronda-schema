@@ -1,7 +1,7 @@
 (ns ronda.schema.data.request
   (:require [ronda.schema.data
              [common :refer :all]
-             [coercer :refer [Coercer CoercerFactory]]
+             [coercer :as c]
              [ring :as ring]
              [response :as r]]
             [schema.core :as s]))
@@ -24,23 +24,30 @@
 ;; body first, then the constraint.
 
 ;; ## Schema
+(def ^:private schema-structure
+  {:params         MapSchemaValue     ;; route/query/form params (keyword -> value)
+   :headers        MapSchemaValue     ;; headers (string -> value)
+   :query-string   SchemaValue        ;; query string constraint (string)
+   :body           SchemaValue        ;; body constraint
+   :constraint     SchemaValue        ;; whole-request constraint
+   :responses      r/RawResponses})   ;; allowed responses (default: ANY)
+
+(def ^:private structural-keys
+  (keys schema-structure))
 
 (def RawRequestSchema
   "Structure of HTTP request schemas."
-  (optional-keys
-    {:params         MapSchemaValue    ;; route/query/form params (keyword -> value)
-     :headers        MapSchemaValue    ;; headers (string -> value)
-     :query-string   SchemaValue       ;; query string constraint (string)
-     :body           SchemaValue       ;; body constraint
-     :constraint     SchemaValue       ;; whole-request constraint
-     :responses      r/RawResponses})) ;; allowed responses (default: ANY)
+  (allow-any
+    (optional-keys
+      schema-structure)))
 
 (def RequestSchema
   "Compiled request schema."
   {:schema     SchemaValue
-   :coercer    (s/maybe Coercer)
+   :coercer    (s/maybe c/Coercer)
    :constraint SchemaValue
-   :responses  r/Responses})
+   :responses  r/Responses
+   :metadata   {s/Any s/Any}})
 
 (def RawRequests
   "Schema for representation of multiple allowed requests."
@@ -65,19 +72,24 @@
       (update-in-existing :params flexible-schema s/Keyword)
       (allow-any)))
 
+(s/defn ^:private collect-metadata :- {s/Any s/Any}
+  "Collect metadata by removing all the schema-specific keys."
+  [schema :- RawRequestSchema]
+  (apply dissoc schema structural-keys))
+
 (s/defn compile-request-schema :- RequestSchema
   "Prepare the different pars of a raw request schema for
    actual validation."
   [schema          :- RawRequestSchema
-   coercer-factory :- (s/maybe CoercerFactory)]
+   coercer-factory :- (s/maybe c/CoercerFactory)]
   (let [base (compile-base-schema schema)]
-    {:schema  base
-     :coercer (if coercer-factory
-                (coercer-factory base))
+    {:schema     base
+     :coercer    (c/apply-factory coercer-factory base)
      :constraint (or (:constraint schema) s/Any)
-     :responses (r/compile-responses
-                  (or (:responses schema) {})
-                  coercer-factory)}))
+     :metadata   (collect-metadata schema)
+     :responses  (r/compile-responses
+                   (or (:responses schema) {})
+                   coercer-factory)}))
 
 (s/defn ^:private compile-methods :- SchemaValue
   "Create schema that will match methods"
@@ -91,7 +103,7 @@
 (s/defn ^:private compile-all-requests
   "Prepare all the given requests for validation"
   [schemas         :- RawRequests
-   coercer-factory :- (s/maybe CoercerFactory)]
+   coercer-factory :- (s/maybe c/CoercerFactory)]
   (->> (for [[method schema] schemas
              :let [r (compile-request-schema
                        schema
@@ -103,7 +115,7 @@
 (s/defn compile-requests :- Requests
   "Prepare requests for actual validation."
   [schemas         :- RawRequests
-   coercer-factory :- (s/maybe CoercerFactory)]
+   coercer-factory :- (s/maybe c/CoercerFactory)]
   (if (empty? schemas)
     (recur [{}] coercer-factory)
     (let [requests (compile-all-requests schemas coercer-factory)]

@@ -71,3 +71,18 @@
            (if schema
              (if-let [error-form (s/check schema value)]
                (->error k schema value error-form)))))))
+
+;; ## Macros
+
+(defmacro unless-error->>
+  "Like `->>` but will short-circuit once an error is encountered."
+  [form & forms]
+  (if (seq forms)
+    (let [[h & rst] forms]
+      `(let [form# ~form]
+         (if (error? form#)
+           form#
+           (unless-error->>
+             (->> form# ~h)
+             ~@rst))))
+    form))

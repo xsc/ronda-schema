@@ -50,6 +50,12 @@
      :request-validation-failed
      :request-constraint-failed]))
 
+(def ValidationError
+  "Possible validation errors."
+  (s/either
+    RequestValidationError
+    ResponseValidationError))
+
 ;; ## Checks
 
 (defn check-for-error

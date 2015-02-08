@@ -1,6 +1,8 @@
 (ns ronda.schema
   (:require [potemkin :refer [import-vars]]
             [ronda.schema
+             coercer
+             middleware
              request
              response]
             [ronda.schema.data
@@ -17,6 +19,11 @@
   [ronda.schema.data.response
    compile-response-schema
    compile-responses]
+  [ronda.schema.coercer
+   default-coercer-factory]
+  [ronda.schema.middleware
+   wrap-schema
+   validation-error]
   [ronda.schema.request
    check-single-request
    check-request

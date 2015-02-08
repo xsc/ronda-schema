@@ -5,8 +5,8 @@
              [request :refer [compile-requests]]]
             [ronda.schema
              [request :refer :all]
-             [response :refer [check-response]]]
-            [ronda.coerce :refer [coercer-factory]]
+             [response :refer [check-response]]
+             [coercer :refer [default-coercer-factory]]]
             [schema.core :as s]))
 
 (s/set-fn-validation! true)
@@ -36,7 +36,7 @@
   (compile-requests {:get request} nil))
 
 (def coercing-schema
-  (compile-requests {:get request} coercer-factory))
+  (compile-requests {:get request} default-coercer-factory))
 
 ;; ## Tests
 

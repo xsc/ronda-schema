@@ -4,7 +4,6 @@
             [ronda.schema.data.response
              :refer [compile-responses
                      compile-response-schema]]
-            [ronda.coerce :as c]
             [schema.core :as s]))
 
 (s/set-fn-validation! true)

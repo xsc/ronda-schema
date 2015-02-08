@@ -1,4 +1,4 @@
-(ns ronda.coerce
+(ns ronda.schema.coercer
   (:require [ronda.schema.data
              [coercer :refer [Coercer CoercerResult]]
              [common :refer :all]]
@@ -52,7 +52,7 @@
       {:error-form (utils/error-val r)}
       {:value r})))
 
-(s/defn coercer-factory :- Coercer
+(s/defn default-coercer-factory :- Coercer
   "Create custom coercer from the given Schema."
   [schema :- SchemaValue]
   (let [f (coerce/coercer schema +custom-coercer+)]

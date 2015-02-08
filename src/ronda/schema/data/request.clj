@@ -4,6 +4,7 @@
              [coercer :as c]
              [ring :as ring]
              [response :as r]]
+            [ronda.schema.coercer :refer [default-coercer-factory]]
             [schema.core :as s]))
 
 ;; ## Data
@@ -80,16 +81,18 @@
 (s/defn compile-request-schema :- RequestSchema
   "Prepare the different pars of a raw request schema for
    actual validation."
-  [schema          :- RawRequestSchema
-   coercer-factory :- (s/maybe c/CoercerFactory)]
-  (let [base (compile-base-schema schema)]
-    {:schema     base
-     :coercer    (c/apply-factory coercer-factory base)
-     :constraint (or (:constraint schema) s/Any)
-     :metadata   (collect-metadata schema)
-     :responses  (r/compile-responses
-                   (or (:responses schema) {})
-                   coercer-factory)}))
+  ([schema :- RawRequestSchema]
+   (compile-request-schema schema default-coercer-factory))
+  ([schema          :- RawRequestSchema
+    coercer-factory :- (s/maybe c/CoercerFactory)]
+   (let [base (compile-base-schema schema)]
+     {:schema     base
+      :coercer    (c/apply-factory coercer-factory base)
+      :constraint (or (:constraint schema) s/Any)
+      :metadata   (collect-metadata schema)
+      :responses  (r/compile-responses
+                    (or (:responses schema) {})
+                    coercer-factory)})))
 
 (s/defn ^:private compile-methods :- SchemaValue
   "Create schema that will match methods"
@@ -114,11 +117,13 @@
 
 (s/defn compile-requests :- Requests
   "Prepare requests for actual validation."
-  [schemas         :- RawRequests
-   coercer-factory :- (s/maybe c/CoercerFactory)]
-  (if (empty? schemas)
-    (recur [{}] coercer-factory)
-    (let [requests (compile-all-requests schemas coercer-factory)]
-      {:methods (compile-methods schemas)
-       :default (get requests Wildcard)
-       :schemas (dissoc requests Wildcard)})))
+  ([schemas :- RawRequests]
+   (compile-requests schemas default-coercer-factory))
+  ([schemas         :- RawRequests
+    coercer-factory :- (s/maybe c/CoercerFactory)]
+   (if (empty? schemas)
+     (recur [{}] coercer-factory)
+     (let [requests (compile-all-requests schemas coercer-factory)]
+       {:methods (compile-methods schemas)
+        :default (get requests Wildcard)
+        :schemas (dissoc requests Wildcard)}))))

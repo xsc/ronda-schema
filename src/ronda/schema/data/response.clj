@@ -3,6 +3,7 @@
              [common :refer :all]
              [coercer :as c]
              [ring :as ring]]
+            [ronda.schema.coercer :refer [default-coercer-factory]]
             [schema.core :as s]))
 
 ;; ## Data
@@ -68,17 +69,19 @@
 (s/defn compile-response-schema :- ResponseSchema
   "Prepare the different parts of a raw response schema for actual
    validation."
-  [schema          :- RawResponseSchema
-   coercer-factory :- (s/maybe c/CoercerFactory)]
-  (let [base (-> schema
-                 (select-keys [:headers :body])
-                 (update-in-existing :headers flexible-schema s/Str)
-                 (allow-any))]
-    {:schema     base
-     :coercer    (c/apply-factory coercer-factory base)
-     :constraint (or (:constraint schema) s/Any)
-     :semantics  (or (:semantics schema) s/Any)
-     :metadata   (collect-metadata schema)}))
+  ([schema :- RawResponseSchema]
+   (compile-response-schema schema default-coercer-factory))
+  ([schema          :- RawResponseSchema
+    coercer-factory :- (s/maybe c/CoercerFactory)]
+   (let [base (-> schema
+                  (select-keys [:headers :body])
+                  (update-in-existing :headers flexible-schema s/Str)
+                  (allow-any))]
+     {:schema     base
+      :coercer    (c/apply-factory coercer-factory base)
+      :constraint (or (:constraint schema) s/Any)
+      :semantics  (or (:semantics schema) s/Any)
+      :metadata   (collect-metadata schema)})))
 
 (s/defn ^:private compile-statuses :- SchemaValue
   "Create schema that will match statuses."
@@ -106,11 +109,13 @@
 
 (s/defn compile-responses :- Responses
   "Prepare responses for actual validation."
-  [rs :- RawResponses
-   coercer-factory :- (s/maybe c/CoercerFactory)]
-  (if (empty? rs)
-    (recur {Wildcard {}} coercer-factory)
-    (let [responses (compile-all-responses rs coercer-factory)]
-      {:statuses (compile-statuses rs)
-       :default  (get responses Wildcard)
-       :schemas  (dissoc responses Wildcard)})))
+  ([rs :- RawResponses]
+   (compile-responses rs default-coercer-factory))
+  ([rs :- RawResponses
+    coercer-factory :- (s/maybe c/CoercerFactory)]
+   (if (empty? rs)
+     (recur {Wildcard {}} coercer-factory)
+     (let [responses (compile-all-responses rs coercer-factory)]
+       {:statuses (compile-statuses rs)
+        :default  (get responses Wildcard)
+        :schemas  (dissoc responses Wildcard)}))))

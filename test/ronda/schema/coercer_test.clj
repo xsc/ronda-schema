@@ -1,7 +1,7 @@
-(ns ronda.coerce-test
+(ns ronda.schema.coercer-test
   (:require [midje.sweet :refer :all]
             [schema.core :as s]
-            [ronda.coerce :refer :all])
+            [ronda.schema.coercer :refer :all])
   (:import [java.net URL URI]
            [java.math BigInteger BigDecimal]
            [clojure.lang BigInt]))
@@ -39,7 +39,7 @@
    :uri    (URI. test-uri)})
 
 (def test-coercer
-  (coercer-factory test-schema))
+  (default-coercer-factory test-schema))
 
 ;; ## Tests
 

@@ -7,9 +7,9 @@
              [request :as rq]
              [response :as rs]]
             [ronda.schema
+             [coercer :as rc]
              [request :refer [check-request possible-responses]]
              [response :refer [check-response]]]
-            [ronda.coerce :as rc]
             [schema.core :as s]))
 
 ;; ## Options
@@ -23,7 +23,7 @@
 (def ^:private default-options
   "Default values for `wrap-schema`'s options."
   {:response? true
-   :coercer rc/coercer-factory})
+   :coercer rc/default-coercer-factory})
 
 ;; ## Error Response
 
@@ -125,7 +125,7 @@
     request-schema :- rq/RawRequests
     {:keys [response? coercer]
      :or {response? true
-          coercer   rc/coercer-factory}
+          coercer   rc/default-coercer-factory}
      :as options}
     :- Options]
    (let [schema (rq/compile-requests request-schema coercer)

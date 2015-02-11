@@ -1,1 +1,0 @@
-([:dependencies ([codox/codox.core "0.8.10"] [org.clojure/clojure "1.7.0-alpha5"] [org.clojure/tools.reader "0.8.13"] [prismatic/schema "0.3.7"] [potemkin/potemkin "0.3.11"] [midje/midje "1.6.3" :scope "test"] [joda-time/joda-time "2.7" :scope "test"])])

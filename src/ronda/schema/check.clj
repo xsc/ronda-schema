@@ -1,4 +1,4 @@
-(ns ronda.schema.check
+(ns ^:no-doc ronda.schema.check
   (:require [ronda.schema.data
              [common :refer :all]
              [coercer :refer [CoercerResult Coercer]]

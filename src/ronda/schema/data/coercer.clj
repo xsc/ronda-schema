@@ -1,4 +1,4 @@
-(ns ronda.schema.data.coercer
+(ns ^:no-doc ronda.schema.data.coercer
   (:require [ronda.schema.data.common :refer [SchemaValue]]
             [schema.core :as s]))
 

@@ -1,4 +1,4 @@
-(ns ronda.schema.data.common
+(ns ^:no-doc ronda.schema.data.common
   (:require [schema.core :as s]
             [clojure.walk :as w]))
 

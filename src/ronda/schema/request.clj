@@ -14,7 +14,7 @@
   [request]
   (-> request meta :ronda/responses))
 
-(defn set-possible-responses
+(defn ^:no-doc set-possible-responses
   "Set the possible responses for the given request."
   [request responses]
   (vary-meta request assoc :ronda/responses responses))

@@ -13,7 +13,7 @@
 
 ;; ## Custom Coercer
 
-(defn coerce-if
+(defn- coerce-if
   [pred f]
   (coerce/safe
     (fn [v]
@@ -21,7 +21,7 @@
         (f v)
         v))))
 
-(defn coerce-with-read
+(defn- coerce-with-read
   [f]
   (coerce/safe
     (fn [v]
@@ -30,6 +30,7 @@
         (f v)))))
 
 (def +custom-coercer+
+  "Custom coercion matcher."
   (merge
     coerce/+string-coercions+
     {URI                 (coerce-if string? #(URI. %))

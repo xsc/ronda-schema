@@ -1,4 +1,4 @@
-(ns ronda.schema.data.errors
+(ns ^:no-doc ronda.schema.data.errors
   (:require [ronda.schema.data.common :refer :all]
             [schema.core :as s]))
 

@@ -10,7 +10,7 @@
 (def wrap-ok-handler
   (partial
     wrap-schema
-    (constantly {:status 200})))
+    (constantly {:status 200, :body "hello"})))
 
 (defn req
   [m]
@@ -18,23 +18,32 @@
     {:request-method :get}
     m))
 
+(def ^:private test-schema
+  {:get {:params {:length s/Int}
+         :constraint
+         {:request-method s/Keyword
+          s/Any s/Any}
+         :responses {200 {}}}})
+
 ;; ## Tests
 
-(let [handler (wrap-ok-handler
-                {:get {:params {:length s/Int}
-                       :constraint
-                       {:request-method s/Keyword
-                        s/Any s/Any}
-                       :responses {200 {}}}})]
-  (tabular
-    (fact "about successful validation in the middleware."
-          (handler (req ?req))
-          => {:status 200, :headers {}})
-    ?req
-    {:query-params {:length 10}}
-    {:route-params {:length 10}}
-    {:query-params {:length "10"}}
-    {:route-params {:length "10"}}))
+(tabular
+  (let [handler ?handler]
+    (tabular
+      (fact "about successful validation in the middleware."
+            (handler (req ?req))
+            => {:status 200,
+                :headers {},
+                :body "hello"})
+      ?req
+      {:query-params {:length 10}}
+      {:route-params {:length 10}}
+      {:query-params {:length "10"}}
+      {:route-params {:length "10"}}))
+  ?handler
+  (wrap-ok-handler test-schema)
+  (wrap-schema (constantly {:body "hello"}) test-schema)
+  (wrap-schema (constantly "hello") test-schema))
 
 (let [handler (wrap-ok-handler {:get {}})]
   (fact "about method validation failure."

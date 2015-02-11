@@ -56,6 +56,17 @@
 
 ;; ## Steps
 
+(s/defn ^:private ensure-response :- (s/maybe ring/Response)
+  "Make sure to return either `nil` or a response map."
+  [value]
+  (if value
+    (let [r (if (map? value)
+              value
+              {:status 200,
+               :headers {},
+               :body value})]
+      (update-in r [:status] #(or % 200)))))
+
 (s/defn ^:private handle-response
   "Validate response if desired."
   [options   :- Options
@@ -75,6 +86,7 @@
    request :- ring/Request]
   (e/unless-error->>
     (handler request)
+    (ensure-response)
     (handle-response options request)))
 
 ;; ## Handler

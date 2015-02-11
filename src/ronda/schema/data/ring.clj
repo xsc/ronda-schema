@@ -1,4 +1,4 @@
-(ns ronda.schema.data.ring
+(ns ^:no-doc ronda.schema.data.ring
   (:require [ronda.schema.data.common :refer :all]
             [schema.core :as s]
             [clojure

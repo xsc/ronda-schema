@@ -12,6 +12,8 @@
                    :plugins [[lein-midje "3.1.3"]
                              [codox "0.8.10"]]
                    :codox {:project {:name "ronda/schema"}
+                           :src-dir-uri "https://github.com/xsc/ronda-schema/blob/master/"
+                           :src-linenum-anchor-prefix "L"
                            :defaults {:doc/format :markdown}}}}
   :aliases {"test" ["midje"]}
   :pedantic? :abort)

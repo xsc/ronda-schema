@@ -45,7 +45,7 @@ __Method Validation__
 ;; => {:status 405,
 ;;     :headers {},
 ;;     :ronda/error {:error :method-not-allowed, ...}
-;;     :body ":method-not-allowed\n{:request-method (not (#{:get} :post))}""}
+;;     :body ":method-not-allowed\n{:request-method (not (#{:get} :post))}"}
 ```
 
 __Request Format Validation__
@@ -67,7 +67,7 @@ __Request Semantics Validation__
 ;; => {:status 422,
 ;;     :headers {},
 ;;     :ronda/error {:error :request-constraint-failed, ...}
-;;     :body ":request-constraint-failed\n{:params {:name (not (name-not-empty?  \"\"))}}"
+;;     :body ":request-constraint-failed\n{:params {:name (not (name-not-empty? \"\"))}}"
 ```
 
 __Request Coercion__

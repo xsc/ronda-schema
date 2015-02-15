@@ -79,7 +79,7 @@
                   (allow-any))]
      {:schema     base
       :coercer    (c/apply-factory coercer-factory base)
-      :constraint (or (:constraint schema) s/Any)
+      :constraint (flexible-schema (or (:constraint schema) s/Any))
       :semantics  (or (:semantics schema) s/Any)
       :metadata   (collect-metadata schema)})))
 

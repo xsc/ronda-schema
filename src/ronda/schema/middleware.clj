@@ -38,8 +38,8 @@
 
 (s/defn error->response-body :- s/Str
   "Convert error result to response body."
-  [{:keys [error]} :- e/ValidationError]
-  (str error))
+  [{:keys [error error-form]} :- e/ValidationError]
+  (str error "\n" (pr-str error-form)))
 
 (s/defn error->response
   "Convert error result to response map."

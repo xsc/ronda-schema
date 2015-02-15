@@ -51,8 +51,7 @@ __Method Validation__
 __Request Format Validation__
 
 ```clojure
-(app {:request-method :get,
-      :query-params {:name "you"}})
+(app {:request-method :get, :query-params {:name "you"}})
 ;; => {:status 400,
 ;;     :headers {},
 ;;     :ronda/error {:error :request-validation-failed, ...},
@@ -62,8 +61,7 @@ __Request Format Validation__
 __Request Semantics Validation__
 
 ```clojure
-(app {:request-method :get
-      :query-params {:name "", :id 0}})
+(app {:request-method :get :query-params {:name "", :id 0}})
 ;; => {:status 422,
 ;;     :headers {},
 ;;     :ronda/error {:error :request-constraint-failed, ...}
@@ -73,8 +71,7 @@ __Request Semantics Validation__
 __Request Coercion__
 
 ```clojure
-(app {:request-method :get,
-      :query-params {:name "you", :id "1234"}})
+(app {:request-method :get, :query-params {:name "you", :id "1234"}})
 ;; => {:status 200,
 ;;     :headers {},
 ;;     :body "Hello, you! (ID: 1234)"}

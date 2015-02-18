@@ -191,11 +191,62 @@ These can be processed by wrapping the handler in a custom middleware à la:
 
 ## Schemas
 
-### Request
-
-TODO
-
 ### Response
+
+A full response schema could look like this:
+
+```clojure
+{:headers    {"content-type" #"^text/plain"},
+ :body       s/Str,
+ :constraint (s/pred (comp seq :body) 'body-not-empty?)
+ :semantics  (s/pred semantics? 'semantics-valid?)}
+```
+
+The following keys are possible, none are required:
+
+- `:headers`: a schema for a map of strings.
+- `:body`: a schema for the body (no type restrictions).
+- `:constraint`: a schema that will be applied to the whole response.
+- `:semantics`: a schema that will be applied to a map of `:request` and
+  `:response`, e.g.:
+
+        (s/pred
+          (fn [{:keys [request response]}]
+            (= (-> request :params :length)
+               (-> response :body count)))
+          'length-semantics?)
+
+A raw response schema can be prepared for validation using
+[`compile-response-schema`](https://xsc.github.io/ronda-schema/ronda.schema.html#var-compile-response-schema)
+which can then be used with
+[`check-single-response`](https://xsc.github.io/ronda-schema/ronda.schema.html#var-check-single-response)
+for direct validation:
+
+```clojure
+(r/check-single-response
+  (r/compile-response-schema {:body s/Str})
+  {:status 200, :headers {}, :body ""})
+;; => {:headers {}, :status 200, :body ""}
+```
+
+Error values can be distinguished using
+[`error?`](https://xsc.github.io/ronda-schema/ronda.schema.html#var-error.3F):
+
+```clojure
+(r/error?
+  (r/check-single-response
+    (r/compile-response-schema {:body s/Str})
+    {:status 200, :headers {}, :body nil}))
+;; => true
+```
+
+Multiple responses can be given using a map of status/response pairs (where the
+status is allowed to be the wildcard value `:*`) and compiled using
+[`compile-responses`](https://xsc.github.io/ronda-schema/ronda.schema.html#var-compile-responses).
+Checking is done by status inside of
+[`check-response`](https://xsc.github.io/ronda-schema/ronda.schema.html#var-check-response).
+
+### Request
 
 TODO
 

@@ -48,6 +48,9 @@ __Method Validation__
 ;;     :body ":method-not-allowed\n{:request-method (not (#{:get} :post))}"}
 ```
 
+If the `:request-method` does not match any of the allowed ones, a HTTP 405
+(Method Not Allowed) response will be returned.
+
 __Request Format Validation__
 
 ```clojure
@@ -57,6 +60,9 @@ __Request Format Validation__
 ;;     :ronda/error {:error :request-validation-failed, ...},
 ;;     :body ":request-validation-failed\n{:params {:id missing-required-key}}"}
 ```
+
+If `:params`, `:headers`, `:query-string` or `:body` don't match the respective
+schema, a HTTP 400 (Bad Request) response will be returned.
 
 __Request Semantics Validation__
 
@@ -68,6 +74,9 @@ __Request Semantics Validation__
 ;;     :body ":request-constraint-failed\n{:params {:name (not (name-not-empty? \"\"))}}"
 ```
 
+If the request does not match the `:constraint` of the respective schema, a HTTP
+422 (Unprocessable) response will be returned.
+
 __Request Coercion__
 
 ```clojure
@@ -76,6 +85,64 @@ __Request Coercion__
 ;;     :headers {},
 ;;     :body "Hello, you! (ID: 1234)"}
 ```
+
+`:id` was coerced from `String` to `Long` to match the `s/Int` schema.
+
+### Response Validation + Coercion
+
+TODO
+
+### Custom Error Handling
+
+[`ronda.schema/validation-error`](https://xsc.github.io/ronda-schema/ronda.schema.html#var-validation-error)
+can be used to access the error value in the response emitted by the
+`wrap-schema` middleware which will have the following format:
+
+```clojure
+{:error :request-validation-failed,
+ :error-form {:params {:id missing-required-key}},
+ :schema {:params {Keyword Any,
+                   :name java.lang.String,
+                   :id Int},
+          Any Any},
+ :value {:params {:name "you"},
+         :headers {},
+         :query-params {:name "you"},
+         :request-method :get}}
+```
+
+Possible error values (and default HTTP status codes):
+
+- `:method-not-allowed` (405)
+- `:request-validation-failed` (400)
+- `:request-constraint-failed` (422)
+- `:status-not-allowed` (500)
+- `:response-validation-failed` (500)
+- `:response-constraint-failed` (500)
+- `:semantics-failed` (500)
+
+These can be processed by wrapping the handler in a custom middleware à la:
+
+```clojure
+(defn wrap-custom-errors
+  [handler]
+  (fn [request]
+    (let [response (handler request)]
+      (case (r/validation-error response)
+        :status-not-allowed { ... }
+        ...
+        response))))
+```
+
+## Schemas
+
+### Request
+
+TODO
+
+### Response
+
+TODO
 
 ## License
 

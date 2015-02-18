@@ -24,15 +24,20 @@ A handler can be wrapped using per-method [request/response schemas](#schemas)
 and [`ronda.schema/wrap-schema`](https://xsc.github.io/ronda-schema/ronda.schema.html#var-wrap-schema):
 
 ```clojure
+(def schema
+ {:params {:name s/Str, :id s/Int}
+  :constraint {:params {:name (s/pred seq 'name-not-empty?)}}
+  :responses {200 {:body s/Str
+                   :constraint {:body (s/pred seq 'body-not-empty?)}}}})
+
 (def app
-  (-> (fn [{:keys [params]}]
+  ;; for testing purposes, we allow a key `:f` in the request
+  ;; to optionally transform the response.
+  (-> (fn [{:keys [params f] :or {f identity}}]
         (let [{:keys [name id]} params]
-          {:status 200,
-           :body (format "Hello, %s! (ID: %d)" name id)}))
-      (r/wrap-schema
-        {:get {:params {:name s/Str, :id s/Int}
-               :constraint {:params {:name (s/pred seq 'name-not-empty?)}}
-               :responses {200 {:body s/Str}}}})))
+          (f {:status 200,
+              :body (format "Hello, %s! (ID: %d)" name id)})))
+      (r/wrap-schema {:get schema})))
 ```
 
 The resulting function will perform a variety of operations.
@@ -91,7 +96,56 @@ __Request Coercion__
 
 ### Response Validation + Coercion
 
-TODO
+__Status Validation__
+
+```clojure
+(app {:request-method :get,
+      :query-params {:name "you", :id 1234}
+      :f #(assoc % :status 201)})
+;; => {:status 500,
+;;     :headers {},
+;;     :ronda/error {:error :status-not-allowed, ...},
+;;     :body ":status-not-allowed\n{:status (not (#{200} 201))}"}
+```
+
+If `:status` does not match one of the allowed ones, a HTTP 500 response will
+be returned.
+
+__Response Format Validation__
+
+```clojure
+(app {:request-method :get,
+      :query-params {:name "you", :id 1234},
+      :f #(dissoc % :body)})
+;; => {:status 500,
+;;     :headers {},
+;;     :ronda/error {:error :response-validation-failed, ...},
+;;     :body ":response-validation-failed\n{:body missing-required-key}"}
+```
+
+If `:headers` or `:body` don't match the respective schemas, a HTTP 500 response
+will be returned.
+
+__Response Constraint Validation__
+
+```clojure
+(app {:request-method :get,
+      :query-params {:name "you", :id 1234},
+      :f #(assoc % :body "")})
+;; => {:status 500,
+;;     :headers {},
+;;     :ronda/error {:error :response-constraint-failed, ...},
+;;     :body ":response-constraint-failed\n{:body (not (body-not-empty? \"\"))}"}
+```
+
+If the response does not match the respective `:constraint` schema, a HTTP 500
+response will be returned.
+
+### Request/Response Semantics
+
+It is possible to model request/response semantics using the `:semantics` key of
+the response schema ([see below](#schemas)). If validtion fails, a HTTP 500
+response will be returned.
 
 ### Custom Error Handling
 

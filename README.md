@@ -25,10 +25,10 @@ and [`ronda.schema/wrap-schema`](https://xsc.github.io/ronda-schema/ronda.schema
 
 ```clojure
 (def schema
- {:params {:name s/Str, :id s/Int}
+ {:params     {:name s/Str, :id s/Int}
   :constraint {:params {:name (s/pred seq 'name-not-empty?)}}
-  :responses {200 {:body s/Str
-                   :constraint {:body (s/pred seq 'body-not-empty?)}}}})
+  :responses  {200 {:body s/Str
+                    :constraint {:body (s/pred seq 'body-not-empty?)}}}})
 
 (def app
   ;; for testing purposes, we allow a key `:f` in the request

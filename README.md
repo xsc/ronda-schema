@@ -145,6 +145,19 @@ TODO
 
 TODO
 
+## Documentation
+
+Auto-generated documentation can be found [here](https://xsc.github.io/ronda-schema/).
+
+## Contributing
+
+Contributions are very welcome.
+
+1. Clone the repository.
+2. Create a branch, make your changes.
+3. Make sure tests are passing by running `lein test`.
+4. Submit a Github pull request.
+
 ## License
 
 Copyright &copy; 2015 Yannick Scherer

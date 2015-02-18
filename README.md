@@ -20,7 +20,8 @@ __REPL__
 
 ## Middleware
 
-A handler can be wrapped using per-method request/response schemas:
+A handler can be wrapped using per-method [request/response schemas](#schemas)
+and [`ronda.schema/wrap-schema`](https://xsc.github.io/ronda-schema/ronda.schema.html#var-wrap-schema):
 
 ```clojure
 (def app

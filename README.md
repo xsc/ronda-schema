@@ -250,6 +250,20 @@ Checking is done by status inside of
 
 TODO
 
+## FAQs
+
+__Q:__ How slow is this?
+
+TODO
+
+__Q:__ How do I handle e.g. JSON data?
+
+TODO
+
+__Q:__ Does it play well with [Liberator](https://github.com/clojure-liberator/liberator)?
+
+TODO
+
 ## Documentation
 
 Auto-generated documentation can be found [here](https://xsc.github.io/ronda-schema/).

@@ -70,7 +70,7 @@ __Request Format Validation__
 If `:params`, `:headers`, `:query-string` or `:body` don't match the respective
 schema, a HTTP 400 (Bad Request) response will be returned.
 
-__Request Semantics Validation__
+__Request Constraint Validation__
 
 ```clojure
 (app {:request-method :get :query-params {:name "", :id 0}})

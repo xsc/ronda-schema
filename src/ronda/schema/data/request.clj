@@ -88,7 +88,7 @@
    (let [base (compile-base-schema schema)]
      {:schema     base
       :coercer    (c/apply-factory coercer-factory base)
-      :constraint (flexible-schema (or (:constraint schema) s/Any))
+      :constraint (constraint-schema (:constraint schema))
       :metadata   (collect-metadata schema)
       :responses  (r/compile-responses
                     (or (:responses schema) {})

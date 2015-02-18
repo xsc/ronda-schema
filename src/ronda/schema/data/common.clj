@@ -24,7 +24,8 @@
       (instance? clojure.lang.PersistentHashMap v)))
 
 (s/defn flexible-schema
-  "Make schema flexible by allowing any additional keys/values in maps."
+  "Make schema flexible by allowing any additional keys/values in maps,
+   even nested ones."
   ([s :- SchemaValue]
    (flexible-schema s s/Any))
   ([s :- SchemaValue
@@ -40,17 +41,17 @@
          m))
      s)))
 
+(s/defn constraint-schema
+  "Make schema flexible if it is a map."
+  [s :- (s/maybe SchemaValue)]
+  (cond (nil? s) s/Any
+        (and (plain-map? s) (not (contains? s s/Any))) (assoc s s/Any s/Any)
+        :else s))
+
 (defn allow-any
   "Allow any additional keys in the given schema."
   [s]
   (merge {s/Any s/Any} s))
-
-(defn constrain-schema
-  "Add constraint to schema if given."
-  [s constraint]
-  (if constraint
-    (s/both s constraint)
-    s))
 
 (defn seq-or-single
   "Allow either a seq with values matching the given schema

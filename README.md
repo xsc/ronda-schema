@@ -141,7 +141,7 @@ __Response Constraint Validation__
 If the response does not match the respective `:constraint` schema, a HTTP 500
 response will be returned.
 
-### Request/Response Semantics
+__Request/Response Semantics__
 
 It is possible to model request/response semantics using the `:semantics` key of
 the response schema ([see below](#schemas)). If validtion fails, a HTTP 500

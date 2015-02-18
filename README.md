@@ -144,7 +144,7 @@ response will be returned.
 __Request/Response Semantics__
 
 It is possible to model request/response semantics using the `:semantics` key of
-the response schema ([see below](#schemas)). If validtion fails, a HTTP 500
+the response schema ([see below](#schemas)). If validation fails, a HTTP 500
 response will be returned.
 
 ### Custom Error Handling

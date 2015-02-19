@@ -5,8 +5,6 @@ using [prismatic/schema][schema].
 
 ## Usage
 
-Don't. But if you insist:
-
 __Leiningen__ ([via Clojars](http://clojars.org/ronda/schema))
 
 [![Clojars Project](http://clojars.org/ronda/schema/latest-version.svg)](http://clojars.org/ronda/schema)

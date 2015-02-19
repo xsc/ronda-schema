@@ -1,4 +1,4 @@
-(defproject ronda/schema "0.1.0-RC1"
+(defproject ronda/schema "0.1.0-SNAPSHOT"
   :description "Request/Response Schemas"
   :url "https://github.com/xsc/ronda-schema"
   :license {:name "Eclipse Public License"

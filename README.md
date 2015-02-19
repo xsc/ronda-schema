@@ -204,8 +204,9 @@ A full response schema could look like this:
 
 The following keys are possible, none are required:
 
-- `:headers`: a schema for a map of strings.
-- `:body`: a schema for the body (no type restrictions).
+- `:headers`: a schema for a map of strings to be matched against the response's
+  `:headers` key.
+- `:body`: a schema for the response body (no type restrictions).
 - `:constraint`: a schema that will be applied to the whole response.
 - `:semantics`: a schema that will be applied to a map of `:request` and
   `:response`, e.g.:
@@ -248,7 +249,55 @@ Checking is done by status inside of
 
 ### Request
 
-TODO
+A full request schema could look like the following:
+
+```clojure
+{:headers      {"content-type" #"^application/json"}
+ :params       {:length s/Int}
+ :query-string s/Str
+ :body         {:action (s/enum :start :stop)}
+ :constraint   {:length (s/pred pos? 'positive?)}
+ :responses    {200 ok-schema, 409 conflict-schema}}
+```
+
+The following keys are possible, none are required:
+
+- `:headers`: a schema for a map of strings to be matched against the request's
+  `:headers` key.
+- `:params`: a schema for a map of keywords that will be matched against the
+  merged result of `:query-params`, `:route-params` and `:form-params`.
+- `:query-string`:  a schema that will be matched against the request's query
+  string.
+- `body`: a schema for the request body (no type restrictions).
+- `:constraint`: a schema hat will be applied to the whole request.
+- `:responses`: a map of response status/schema pairs (the status is allowed to
+  be the wildcard `:*` if a default schema shall be provided).
+
+A raw request schems can be prepared for validation using
+[`compile-request-schema`](https://xsc.github.io/ronda-schema/ronda.schema.html#var-compile-request-schema)
+which can then be used with
+[`check-single-request`](https://xsc.github.io/ronda-schema/ronda.schema.html#var-check-single-request)
+for direct validation:
+
+```clojure
+(r/check-single-request
+  (r/compile-request-schema {:params {:x s/Int}})
+  {:request-method :get, :query-params {:x "0"}, :headers {}})
+;; => {:request-method :get,
+;;     :headers {},
+;;     :query-params {:x "0"}
+;;     :params {:x 0}}
+```
+
+As mentioned above, `:query-params`/`:route-params`/`:form-params` will always
+be merged into `:params` which is also the only place that parameter coercion
+will happen. Keep that in mind when writing your handlers!
+
+Multiple requests can be compiled using a map of method/schema pairs (method is
+allowed to be the wildcard `:*`) via
+[`compile-requests`](https://xsc.github.io/ronda-schema/ronda.schema.html#var-compile-requests)
+and subsequently checked by method in
+[`check-request`](https://xsc.github.io/ronda-schema/ronda.schema.html#var-check-request).
 
 ## FAQs
 

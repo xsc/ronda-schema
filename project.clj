@@ -14,6 +14,10 @@
                    :codox {:project {:name "ronda/schema"}
                            :src-dir-uri "https://github.com/xsc/ronda-schema/blob/master/"
                            :src-linenum-anchor-prefix "L"
-                           :defaults {:doc/format :markdown}}}}
-  :aliases {"test" ["midje"]}
+                           :defaults {:doc/format :markdown}}}
+             :perf {:dependencies [[criterium "0.4.3"]]
+                    :test-paths ^:replace ["perf"]
+                    :jvm-opts ^:replace []}}
+  :aliases {"test" ["midje"]
+            "perf" ["with-profile" "+perf" "test" ":only" "benchmark"]}
   :pedantic? :abort)

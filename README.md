@@ -317,7 +317,22 @@ library][schema] might reduce that significance.
 
 __Q: How do I handle e.g. JSON data?__
 
-TODO
+Make sure that data decoding/encoding happens before and after schema validation
+respectively, and validate the unencoded data, probably using the `:body` key.
+
+[ring-json](https://github.com/ring-clojure/ring-json), for example, stores the
+decoded JSON either in `:params` (`wrap-json-params`) or `:body`
+(`wrap-json-body`), generating the response JSON again from `:body`. Your
+middleware stack thus would have to look like this:
+
+```clojure
+(-> handler
+    (r/wrap-schema {...})
+    (ring.middleware.json/wrap-json-response {...})
+    (ring.middleware.json/wrap-json-body {...}))
+```
+
+The `wrap-schema` middleware should thus be closer to the bottom than any codec.
 
 __Q: Does it play well with [Liberator](https://github.com/clojure-liberator/liberator)?__
 

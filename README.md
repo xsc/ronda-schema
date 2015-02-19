@@ -355,7 +355,7 @@ negotiated format:
 
 A workaround for this would be to use `liberator.representation/ring-response`
 to ensure the response is returned as-is, performing content-negotiation later
-on. An abstraction over this should not be too hard to produce an would be much
+on. An abstraction over this should not be too hard to produce and would be much
 appreciated.
 
 ## Documentation

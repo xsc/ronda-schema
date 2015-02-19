@@ -332,7 +332,7 @@ middleware stack should thus look similar to the following one:
     (ring.middleware.json/wrap-json-body {...}))
 ```
 
-The `wrap-schema` middleware should thus be closer to the bottom than any codec.
+The `wrap-schema` middleware has to be closer to the bottom than any codec.
 
 __Q: Does it play well with [Liberator](https://github.com/clojure-liberator/liberator)?__
 

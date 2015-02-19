@@ -252,25 +252,25 @@ TODO
 
 ## FAQs
 
-__Q:__ How slow is this?
+__Q: How slow is this?__
 
 You can clone the repository and run `lein perf` which will compare the
 schema-based middleware to a custom one performing validation/coercion _on
 foot_.
 
-Runs of the benchmark show an approximate overhead of __20x__, i.e. validation
-using schemas produces a _constant_ overhead that is 20 times higher than using
+Runs of the benchmark show an approximate overhead of __21x__, i.e. validation
+using schemas produces a _constant_ overhead that is 21 times higher than using
 a direct approach.
 
-You have to decide on a per-case basis if the qualitative values are
-significant. Also, it'll be interesting to see if there are performance
-improvements in the underlying [schema library][schema].
+You have to decide on a per-case basis if the actual timing values are
+significant. Also, future performance improvements in the underlying [schema
+library][schema] might reduce that significance.
 
-__Q:__ How do I handle e.g. JSON data?
+__Q: How do I handle e.g. JSON data?__
 
 TODO
 
-__Q:__ Does it play well with [Liberator](https://github.com/clojure-liberator/liberator)?
+__Q: Does it play well with [Liberator](https://github.com/clojure-liberator/liberator)?__
 
 TODO
 

@@ -336,7 +336,27 @@ The `wrap-schema` middleware has to be closer to the bottom than any codec.
 
 __Q: Does it play well with [Liberator](https://github.com/clojure-liberator/liberator)?__
 
-TODO
+Generally, yes. Problems arise mostly from content negotiation which causes a
+Liberator resource to usually return the body as a string matching the
+negotiated format:
+
+```clojure
+(require '[liberator.core :refer [resource]])
+
+((r/wrap-schema
+   (resource {:available-media-types ["application/json"]
+              :handle-ok (constantly {:data "Hello!"})})
+   {:get {:responses {200 {:body {:data s/Str}}}}})
+ {:request-method :get, :headers {"accept" "application/json"}})
+;; => {:status 500,
+;;     :ronda/error {:error-form {:body (not (map? "{\"data\":\"Hello!\"}"))}, ...}
+;;     ...}
+```
+
+A workaround for this would be to use `liberator.representation/ring-response`
+to ensure the response is returned as-is, performing content-negotiation later
+on. An abstraction over this should not be too hard to produce an would be much
+appreciated.
 
 ## Documentation
 

@@ -254,7 +254,17 @@ TODO
 
 __Q:__ How slow is this?
 
-TODO
+You can clone the repository and run `lein perf` which will compare the
+schema-based middleware to a custom one performing validation/coercion _on
+foot_.
+
+Runs of the benchmark show an approximate overhead of __20x__, i.e. validation
+using schemas produces a _constant_ overhead that is 20 times higher than using
+a direct approach.
+
+You have to decide on a per-case basis if the qualitative values are
+significant. Also, it'll be interesting to see if there are performance
+improvements in the underlying [schema library][schema].
 
 __Q:__ How do I handle e.g. JSON data?
 

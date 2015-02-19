@@ -323,7 +323,7 @@ respectively, and validate the unencoded data, probably using the `:body` key.
 [ring-json](https://github.com/ring-clojure/ring-json), for example, stores the
 decoded JSON either in `:params` (`wrap-json-params`) or `:body`
 (`wrap-json-body`), generating the response JSON again from `:body`. Your
-middleware stack thus would have to look like this:
+middleware stack should thus look similar to the following one:
 
 ```clojure
 (-> handler

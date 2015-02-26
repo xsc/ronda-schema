@@ -68,7 +68,9 @@
   "Merge `:route-params`, `:query-params`, `:form-params` into `:params`."
   [request :- Request]
   (let [params (map #(get request %) param-keys)]
-    (update-in request [:params] (fnil into {}) params)))
+    (-> request
+        (update-in [:params] w/keywordize-keys)
+        (update-in [:params] (fnil into {}) params))))
 
 (s/defn normalize-request :- Request
   "Normalize request in preparation of validation."

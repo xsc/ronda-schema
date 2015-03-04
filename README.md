@@ -307,7 +307,7 @@ foot_.
 
 Runs of the benchmark show an approximate overhead of __21x__, i.e. validation
 using schemas produces a _constant_ overhead that is 21 times higher than using
-a direct approach.
+a direct approach - but note that we're usually talking about microseconds here!
 
 You have to decide on a per-case basis if the actual timing values are
 significant. Also, future performance improvements in the underlying [schema

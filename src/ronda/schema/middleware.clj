@@ -120,10 +120,11 @@
     schema  :- rq/Requests
     request :- ring/Request
     options :- Options]
-   (as-response
-     (e/unless-error->>
-       (check-request schema request)
-       (handle-request options handler)))))
+   (let [options (merge default-options options)]
+     (as-response
+       (e/unless-error->>
+         (check-request schema request)
+         (handle-request options handler))))))
 
 ;; ## Middleware
 
@@ -140,12 +141,11 @@
           coercer   rc/default-coercer-factory}
      :as options}
     :- Options]
-   (let [schema (rq/compile-requests request-schema coercer)
-         options' (merge default-options options)]
+   (let [schema (rq/compile-requests request-schema coercer)]
      (fn handler-with-schema
        [request]
        (handle-with-validation
          handler
          schema
          request
-         options')))))
+         options)))))

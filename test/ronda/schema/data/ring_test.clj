@@ -27,7 +27,11 @@
   (fact "about merging all request params."
         (let [r' (r/merge-params r)]
           (:params r') => {:a 1, "b" 2, :c "1"
-                           "d" 2, :e 1, :f 2})))
+                           "d" 2, :e 1, :f 2}))
+  (fact "about preserving the existing params."
+        (let [r' (r/merge-params (assoc r :params {:e :existing}))]
+          (:params r') => {:a 1, "b" 2, :c "1"
+                           "d" 2, :e :existing, :f 2})))
 
 (fact "about normalizing headers."
       (let [r (r/normalize-headers

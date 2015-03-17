@@ -52,7 +52,7 @@
 
 (def ^:private param-keys
   "Request keys that contain values to be merged into `:params`."
-  [:route-params :query-params :form-params])
+  [:route-params :query-params :form-params :params])
 
 (s/defn normalize-params :- Request
   "Keywordize all request parameter maps."
@@ -67,10 +67,8 @@
 (s/defn merge-params :- Request
   "Merge `:route-params`, `:query-params`, `:form-params` into `:params`."
   [request :- Request]
-  (let [params (map #(get request %) param-keys)]
-    (-> request
-        (update-in [:params] w/keywordize-keys)
-        (update-in [:params] (fnil into {}) params))))
+  (let [params (into {} (map #(get request %) param-keys))]
+    (assoc request :params params)))
 
 (s/defn normalize-request :- Request
   "Normalize request in preparation of validation."

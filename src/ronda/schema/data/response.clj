@@ -83,6 +83,9 @@
       :semantics  (or (:semantics schema) s/Any)
       :metadata   (collect-metadata schema)})))
 
+(def ^:private default-statuses
+  [500])
+
 (s/defn ^:private compile-statuses :- SchemaValue
   "Create schema that will match statuses."
   [responses :- RawResponses]
@@ -90,7 +93,22 @@
                    (mapcat as-seq (keys responses)))]
     (if (wildcard? statuses)
       s/Any
-      {:status (apply s/enum statuses)})))
+      (->> (concat default-statuses statuses)
+           (distinct)
+           (apply s/enum)
+           (hash-map :status)))))
+
+(s/defn ^:private attach-default-schemas
+  "Attach default schemas if necessary."
+  [coercer-factory schemas]
+  (if (and (not (contains? schemas Wildcard))
+           (not-any? #(contains? schemas %) default-statuses))
+    (let [default-schema (compile-response-schema {} coercer-factory)]
+      (reduce
+        (fn [schemas status]
+          (assoc schemas status default-schema))
+        schemas default-statuses))
+    schemas))
 
 (s/defn ^:private compile-all-responses
   :- {(allow-wildcard ring/Status) ResponseSchema}
@@ -102,10 +120,11 @@
                        schema
                        coercer-factory)]
              status (if (wildcard? statuses)
-                      [:*]
+                      [Wildcard]
                       (as-seq statuses))]
          [status r])
-       (into {})))
+       (into {})
+       (attach-default-schemas coercer-factory)))
 
 (s/defn compile-responses :- Responses
   "Prepare responses for actual validation."

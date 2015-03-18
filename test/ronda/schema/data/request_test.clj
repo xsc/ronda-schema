@@ -32,7 +32,7 @@
         constraint => some?
         responses => map?
         metadata => {:description "Schema"}
-        (-> responses :schemas keys) => [200]
+        (-> responses :schemas keys sort) => [200 500]
         (:default responses) => nil?)
   (tabular
     (fact "about request schema matches."

@@ -71,7 +71,7 @@
             responses (possible-responses r)]
         (:error r) => nil?
         r => (assoc req :params {:length 8} :headers {})
-        (-> responses :schemas keys) => [200]
+        (-> responses :schemas keys sort) => [200 500]
         (:error
           (check-response responses {:status 200} r)) => :response-validation-failed))
 
@@ -100,4 +100,4 @@
                 :headers {}
                 :query-params {:length "12"}
                 :params {:length 12}}
-          (-> r possible-responses :schemas keys) => [200])))
+          (-> r possible-responses :schemas keys sort) => [200 500])))

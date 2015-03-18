@@ -83,13 +83,13 @@
                                                  {[200 201 202] response
                                                   400 {}}
                                                  nil)]
-        (set (keys schemas)) => #{200 201 202 400}
+        (set (keys schemas)) => #{200 201 202 400 500}
         (map
           #(s/check (:status statuses) %)
-          [200 201 202 400]) => (has every? nil?)
+          [200 201 202 400 500]) => (has every? nil?)
         (map
           #(s/check (:status statuses) %)
-          [500 404]) => (has not-any? nil?)
+          [503 404]) => (has not-any? nil?)
         default => nil?))
 
 (fact "about compiling multiple responses (with default)."

@@ -30,7 +30,7 @@
         (:semantics r) =not=> nil?
         (:metadata r) => {:description "Response"})
       (let [r (r/compile-response-schema {} nil)]
-        (:constraint r) => s/Any
+        ((:constraint r) :not-valid) => nil?
         (:semantics r) => s/Any
         (:schema r) => {s/Any s/Any}))
 
@@ -72,9 +72,7 @@
                   :body "1234567"}]
     (fact "about constraint mismatches."
           (s/check (:schema compiled-response) response) => nil?
-          (let [r (s/check
-                    (:constraint compiled-response)
-                    response)]
+          (let [r ((:constraint compiled-response) response)]
             (-> (u/validation-error-explain r)
                 second first) => 'valid-body?))))
 

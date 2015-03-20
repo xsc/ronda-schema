@@ -25,6 +25,7 @@
 ;; body first, then the constraint.
 
 ;; ## Schema
+
 (def ^:private schema-structure
   {:params         MapSchemaValue     ;; route/query/form params (keyword -> value)
    :headers        MapSchemaValue     ;; headers (string -> value)
@@ -46,7 +47,7 @@
   "Compiled request schema."
   {:schema     SchemaValue
    :coercer    (s/maybe c/Coercer)
-   :constraint SchemaValue
+   :constraint SchemaChecker
    :responses  r/Responses
    :metadata   {s/Any s/Any}})
 

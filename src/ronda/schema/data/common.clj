@@ -61,12 +61,16 @@
          m))
      s)))
 
-(s/defn constraint-schema
-  "Make schema flexible if it is a map."
+(s/defn constraint-schema :- SchemaChecker
+  "Generate constraint schema."
   [s :- (s/maybe SchemaValue)]
-  (cond (nil? s) s/Any
-        (and (plain-map? s) (not (contains? s s/Any))) (assoc s s/Any s/Any)
-        :else s))
+  (cond (nil? s)
+        noop-checker
+
+        (and (plain-map? s) (not (contains? s s/Any)))
+        (->checker (assoc s s/Any s/Any))
+
+        :else (->checker s)))
 
 (defn allow-any
   "Allow any additional keys in the given schema."

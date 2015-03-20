@@ -37,7 +37,7 @@
   (tabular
     (fact "about request schema matches."
           (s/check schema ?request) => nil?
-          (s/check constraint ?request) => nil?)
+          (constraint ?request) => nil?)
     ?request
     {:request-method :get
      :headers {"accept" "text/plain;text/xml"}
@@ -79,8 +79,7 @@
     [:query-string])
 
   (fact "about request constraint mismatches."
-        (->> (s/check
-               constraint
+        (->> (constraint
                {:request-method :get
                 :route-params {:id 7}
                 :query-params {:length 8}

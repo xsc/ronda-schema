@@ -43,7 +43,7 @@
   "A compiled HTTP response schema."
   {:schema     MapSchemaValue
    :coercer    (s/maybe c/Coercer)
-   :constraint SchemaValue
+   :constraint SchemaChecker
    :semantics  SchemaValue
    :metadata   {s/Any s/Any}})
 

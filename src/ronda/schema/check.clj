@@ -10,7 +10,7 @@
 
 (s/defn check-constraint :- (s/maybe e/ValidationError)
   "Check constraint schema against value."
-  [constraint :- (s/maybe SchemaValue)
+  [constraint :- SchemaChecker
    value      :- s/Any
    error-key  :- s/Keyword]
   (if constraint
@@ -75,7 +75,7 @@
 
 (s/defn check-response-constraint :- (s/maybe e/ResponseValidationError)
   "Check constraint on the given response."
-  [constraint :- (s/maybe SchemaValue)
+  [constraint :- SchemaChecker
    value      :- s/Any]
   (check-constraint
     constraint
@@ -118,7 +118,7 @@
 
 (s/defn check-request-constraint :- (s/maybe e/RequestValidationError)
   "Check constraint on the given response."
-  [constraint :- (s/maybe SchemaValue)
+  [constraint :- SchemaChecker
    value      :- s/Any]
   (check-constraint
     constraint

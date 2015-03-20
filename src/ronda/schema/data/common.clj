@@ -10,6 +10,26 @@
 (def MapSchemaValue
   {s/Any SchemaValue})
 
+(def SchemaChecker
+  (s/=> s/Any s/Any))
+
+(s/defn ->checker :- SchemaChecker
+  "Generate checker with original schema in metadata."
+  [schema :- SchemaValue]
+  (with-meta
+    (s/checker schema)
+    {::schema schema}))
+
+(s/defn as-schema :- SchemaValue
+  "Get schema value from raw schema or checker."
+  [s :- (s/either SchemaValue SchemaChecker)]
+  (or (some-> s meta ::schema) s))
+
+(def noop-checker
+  (with-meta
+    (constantly nil)
+    {::schema s/Any}))
+
 (s/defn optional-keys
   "Make all schema keys optional."
   [m :- {s/Any s/Any}]

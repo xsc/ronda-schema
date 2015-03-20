@@ -22,7 +22,7 @@
     (merge
       {:error k
        :error-form error-form
-       :schema schema
+       :schema (as-schema schema)
        :value value}
       (if throwable
         {:throwable throwable}))
@@ -69,7 +69,9 @@
        (some
          (fn [[k schema]]
            (if schema
-             (if-let [error-form (s/check schema value)]
+             (if-let [error-form (if (fn? schema)
+                                   (schema value)
+                                   (s/check schema value))]
                (->error k schema value error-form)))))))
 
 ;; ## Macros

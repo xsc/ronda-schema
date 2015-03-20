@@ -44,7 +44,7 @@
 
 (s/defn check-semantics :- (s/maybe e/ResponseValidationError)
   "Check semantics schema against request/response."
-  [semantics :- (s/maybe SchemaValue)
+  [semantics :- SchemaChecker
    request   :- (s/maybe ring/Request)
    response  :- ring/Response]
   (if (and semantics request)

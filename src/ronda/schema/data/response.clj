@@ -44,7 +44,7 @@
   {:schema     MapSchemaValue
    :coercer    (s/maybe c/Coercer)
    :constraint SchemaChecker
-   :semantics  SchemaValue
+   :semantics  SchemaChecker
    :metadata   {s/Any s/Any}})
 
 (def RawResponses
@@ -80,7 +80,7 @@
      {:schema     base
       :coercer    (c/apply-factory coercer-factory base)
       :constraint (constraint-schema (:constraint schema))
-      :semantics  (or (:semantics schema) s/Any)
+      :semantics  (or (some-> schema :semantics ->checker) noop-checker)
       :metadata   (collect-metadata schema)})))
 
 (def ^:private default-statuses

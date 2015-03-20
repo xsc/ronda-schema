@@ -31,7 +31,7 @@
         (:metadata r) => {:description "Response"})
       (let [r (r/compile-response-schema {} nil)]
         ((:constraint r) :not-valid) => nil?
-        (:semantics r) => s/Any
+        ((:semantics r) :not-valid) => nil?
         (:schema r) => {s/Any s/Any}))
 
 (let [compiled-response (r/compile-response-schema response nil)]

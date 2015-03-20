@@ -86,11 +86,11 @@
 
 (s/defn check-method :- (s/maybe e/RequestValidationError)
   "Check method schema against request."
-  [method-schema :- SchemaValue
-   request       :- ring/Request]
+  [method-checker :- SchemaChecker
+   request        :- ring/Request]
   (e/check-for-error
     (select-keys request [:request-method])
-    :method-not-allowed method-schema))
+    :method-not-allowed method-checker))
 
 (s/defn check-params :- (s/maybe e/RequestValidationError)
   "Check params schema against request."

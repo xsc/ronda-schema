@@ -58,7 +58,7 @@
 
 (def Requests
   "Compiled allowed requests."
-  {:methods SchemaValue
+  {:methods SchemaChecker
    :default (s/maybe RequestSchema)
    :schemas {ring/Method RequestSchema}})
 
@@ -94,14 +94,15 @@
                     (or (:responses schema) {})
                     coercer-factory)})))
 
-(s/defn ^:private compile-methods :- SchemaValue
+(s/defn ^:private compile-methods :- SchemaChecker
   "Create schema that will match methods"
   [schemas :- RawRequests]
   (let [methods (normalize-wildcard
                   (mapcat as-seq (keys schemas)))]
     (if (wildcard? methods)
-      s/Any
-      {:request-method (apply s/enum methods)})))
+      noop-checker
+      (->checker
+        {:request-method (apply s/enum methods)}))))
 
 (s/defn ^:private compile-all-requests
   "Prepare all the given requests for validation"

@@ -95,9 +95,9 @@
               {:get {}
                :post {}}
               nil)]
-        (s/check methods {:request-method :get}) => nil?
-        (s/check methods {:request-method :post}) => nil?
-        (s/check methods {:request-method :delete}) =not=> nil?
+        (methods {:request-method :get}) => nil?
+        (methods {:request-method :post}) => nil?
+        (methods {:request-method :delete}) =not=> nil?
         default => nil?
         (count schemas) => 2
         (set (keys schemas)) => #{:get :post}))
@@ -108,9 +108,9 @@
               {[:get :post] {}
                :* {}}
               nil)]
-        (s/check methods {:request-method :get}) => nil?
-        (s/check methods {:request-method :post}) => nil?
-        (s/check methods {:request-method :delete}) => nil?
+        (methods {:request-method :get}) => nil?
+        (methods {:request-method :post}) => nil?
+        (methods {:request-method :delete}) => nil?
         default =not=> nil?
         (count schemas) => 2
         (set (keys schemas)) => #{:get :post}))

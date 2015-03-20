@@ -55,7 +55,7 @@
 
 (def Responses
   "A map of possible responses and their compiled schemas."
-  {:statuses SchemaValue
+  {:statuses SchemaChecker
    :default  (s/maybe SchemaValue)
    :schemas  {ring/Status ResponseSchema}})
 
@@ -86,17 +86,18 @@
 (def ^:private default-statuses
   [500])
 
-(s/defn ^:private compile-statuses :- SchemaValue
+(s/defn ^:private compile-statuses :- SchemaChecker
   "Create schema that will match statuses."
   [responses :- RawResponses]
   (let [statuses (normalize-wildcard
                    (mapcat as-seq (keys responses)))]
     (if (wildcard? statuses)
-      s/Any
+      noop-checker
       (->> (concat default-statuses statuses)
            (distinct)
            (apply s/enum)
-           (hash-map :status)))))
+           (hash-map :status)
+           (->checker)))))
 
 (s/defn ^:private attach-default-schemas
   "Attach default schemas if necessary."

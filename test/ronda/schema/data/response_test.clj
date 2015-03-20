@@ -85,10 +85,10 @@
                                                  nil)]
         (set (keys schemas)) => #{200 201 202 400 500}
         (map
-          #(s/check (:status statuses) %)
+          #(statuses {:status %})
           [200 201 202 400 500]) => (has every? nil?)
         (map
-          #(s/check (:status statuses) %)
+          #(statuses {:status %})
           [503 404]) => (has not-any? nil?)
         default => nil?))
 
@@ -98,5 +98,5 @@
                                                   [:*] {}}
                                                  nil)]
         (set (keys schemas)) => #{200}
-        statuses => s/Any
+        (statuses {:status :crazy-status}) => nil
         default =not=> nil?))

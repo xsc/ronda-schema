@@ -54,11 +54,11 @@
 
 (s/defn check-status :- (s/maybe e/ResponseValidationError)
   "Check status schema against response."
-  [status-schema :- SchemaValue
-   response      :- ring/Response]
+  [status-checker :- SchemaChecker
+   response       :- ring/Response]
   (e/check-for-error
     (select-keys response [:status])
-    :status-not-allowed status-schema))
+    :status-not-allowed status-checker))
 
 (s/defn check-response-with-coercion
   :- (s/either e/ResponseValidationError ring/Response)

@@ -371,7 +371,7 @@ Contributions are very welcome.
 
 ## License
 
-```clojure
+```
 Copyright (c) 2015 Yannick Scherer
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

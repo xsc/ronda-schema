@@ -1,7 +1,8 @@
 (defproject ronda/schema "0.1.0-SNAPSHOT"
   :description "Request/Response Schemas"
   :url "https://github.com/xsc/ronda-schema"
-  :license {:name "MIT License"}
+  :license {:name "MIT License"
+            :url "http://xsc.mit-license.org"}
   :dependencies [[org.clojure/clojure "1.7.0-alpha5"]
                  [org.clojure/tools.reader "0.8.16"]
                  [prismatic/schema "0.4.0"]

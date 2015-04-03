@@ -40,6 +40,27 @@ and [`ronda.schema/wrap-schema`](https://xsc.github.io/ronda-schema/ronda.schema
 
 The resulting function will perform a variety of operations.
 
+### Integration with `ronda/routing`
+
+You can add `wrap-schema` as a route-metadata-activated middleware using
+[ronda/routing][ronda-routing], attaching schemas to endpoints using
+`ronda.routing/enable-middlewares`:
+
+```clojure
+(require '[ronda.routing :as routing])
+
+(def routes-with-schema
+  (-> routes
+      (routing/enable-middlewares
+        :home {:schema {:get schema}})
+      ...))
+
+(def app
+  (->> (routing/compile-endpoints {:home "/"})
+       (routing/meta-middleware :schema #(wrap-schema % %3))
+       (routing/wrap-routing routes-with-schema)))
+```
+
 ### Request Validation + Coercion
 
 __Method Validation__
@@ -394,3 +415,4 @@ SOFTWARE.
 ```
 
 [schema]: https://github.com/prismatic/schema
+[ronda-routing]: https://github.com/xsc/ronda-routing

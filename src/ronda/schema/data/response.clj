@@ -66,6 +66,12 @@
   [schema :- RawResponseSchema]
   (apply dissoc schema structural-keys))
 
+(s/defn ^:private compile-constraint-schema :- SchemaChecker
+  [{:keys [constraint]} :- RawResponseSchema]
+  (if constraint
+    (->checker constraint)
+    noop-checker))
+
 (s/defn compile-response-schema :- ResponseSchema
   "Prepare the different parts of a raw response schema for actual
    validation."
@@ -79,7 +85,7 @@
                   (allow-any))]
      {:schema     base
       :coercer    (c/apply-factory coercer-factory base)
-      :constraint (constraint-schema (:constraint schema))
+      :constraint (compile-constraint-schema schema)
       :semantics  (or (some-> schema :semantics ->checker) noop-checker)
       :metadata   (collect-metadata schema)})))
 

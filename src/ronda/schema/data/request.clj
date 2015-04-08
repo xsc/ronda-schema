@@ -27,12 +27,13 @@
 ;; ## Schema
 
 (def ^:private schema-structure
-  {:params         MapSchemaValue     ;; route/query/form params (keyword -> value)
-   :headers        MapSchemaValue     ;; headers (string -> value)
-   :query-string   SchemaValue        ;; query string constraint (string)
-   :body           SchemaValue        ;; body constraint
-   :constraint     SchemaValue        ;; whole-request constraint
-   :responses      r/RawResponses})   ;; allowed responses (default: ANY)
+  {:params            MapSchemaValue     ;; route/query/form params (keyword -> value)
+   :headers           MapSchemaValue     ;; headers (string -> value)
+   :query-string      SchemaValue        ;; query string constraint (string)
+   :body              SchemaValue        ;; body constraint
+   :constraint        SchemaValue        ;; whole-request constraint
+   :param-constraints MapSchemaValue     ;; constraints on the params map.
+   :responses         r/RawResponses})   ;; allowed responses (default: ANY)
 
 (def ^:private structural-keys
   (keys schema-structure))
@@ -79,6 +80,22 @@
   [schema :- RawRequestSchema]
   (apply dissoc schema structural-keys))
 
+(s/defn ^:private compile-constraint-schema :- SchemaChecker
+  "Generate a single constraint schema from the request-wide and
+   the param constraint schema."
+  [{:keys [constraint param-constraints]} :- RawRequestSchema]
+  (if (or constraint param-constraints)
+    (->checker
+      (if-let [pc (some->> param-constraints
+                           (allow-any)
+                           (hash-map :params)
+                           (allow-any))]
+        (if constraint
+          (s/both pc constraint)
+          pc)
+        constraint))
+    noop-checker))
+
 (s/defn compile-request-schema :- RequestSchema
   "Prepare the different pars of a raw request schema for
    actual validation."
@@ -89,7 +106,7 @@
    (let [base (compile-base-schema schema)]
      {:schema     base
       :coercer    (c/apply-factory coercer-factory base)
-      :constraint (constraint-schema (:constraint schema))
+      :constraint (compile-constraint-schema schema)
       :metadata   (collect-metadata schema)
       :responses  (r/compile-responses
                     (or (:responses schema) {})

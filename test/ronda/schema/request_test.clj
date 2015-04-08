@@ -35,6 +35,15 @@
 (def request-schema
   (compile-requests {:get request} nil))
 
+(def param-constraint-schema
+  (compile-requests
+    {:get (-> request
+              (dissoc :constraint)
+              (assoc-in
+                [:param-constraints :length]
+                (s/pred pos? 'length-positive?)))}
+    nil))
+
 (def coercing-schema
   (compile-requests {:get request} default-coercer-factory))
 
@@ -60,6 +69,11 @@
 (fact "about request constraint failure."
       (let [r (check-request
                 request-schema
+                {:request-method :get
+                 :query-params {:length -8}})]
+        (:error r) => :request-constraint-failed)
+      (let [r (check-request
+                param-constraint-schema
                 {:request-method :get
                  :query-params {:length -8}})]
         (:error r) => :request-constraint-failed))

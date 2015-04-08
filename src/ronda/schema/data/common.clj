@@ -61,17 +61,6 @@
          m))
      s)))
 
-(s/defn constraint-schema :- SchemaChecker
-  "Generate constraint schema."
-  [s :- (s/maybe SchemaValue)]
-  (cond (nil? s)
-        noop-checker
-
-        (and (plain-map? s) (not (contains? s s/Any)))
-        (->checker (assoc s s/Any s/Any))
-
-        :else (->checker s)))
-
 (defn allow-any
   "Allow any additional keys in the given schema."
   [s]

@@ -271,12 +271,13 @@ Checking is done by status inside of
 A full request schema could look like the following:
 
 ```clojure
-{:headers      {"content-type" #"^application/json"}
- :params       {:length s/Int}
- :query-string s/Str
- :body         {:action (s/enum :start :stop)}
- :constraint   {:params {:length (s/pred pos? 'positive?)}}
- :responses    {200 ok-schema, 409 conflict-schema}}
+{:headers           {"content-type" #"^application/json"}
+ :params            {:length s/Int}
+ :query-string      s/Str
+ :body              {:action (s/enum :start :stop)}
+ :constraint        (s/pred #(-> % :query-string count (> 8)) 'valid-query?)
+ :param-constraints {:length (s/pred pos? 'positive)}
+ :responses         {200 ok-schema, 409 conflict-schema}}
 ```
 
 The following keys are possible, none are required:
@@ -289,6 +290,8 @@ The following keys are possible, none are required:
   string.
 - `body`: a schema for the request body (no type restrictions).
 - `:constraint`: a schema hat will be applied to the whole request.
+- `:param-constraints`: a map schema for semantic validation of the `:params`
+  map.
 - `:responses`: a map of response status/schema pairs (the status is allowed to
   be the wildcard `:*` if a default schema shall be provided).
 

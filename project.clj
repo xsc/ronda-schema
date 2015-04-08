@@ -1,4 +1,4 @@
-(defproject ronda/schema "0.1.1"
+(defproject ronda/schema "0.1.2-SNAPSHOT"
   :description "Request/Response Schemas"
   :url "https://github.com/xsc/ronda-schema"
   :license {:name "MIT License"

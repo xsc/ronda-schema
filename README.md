@@ -275,7 +275,7 @@ A full request schema could look like the following:
  :params       {:length s/Int}
  :query-string s/Str
  :body         {:action (s/enum :start :stop)}
- :constraint   {:length (s/pred pos? 'positive?)}
+ :constraint   {:params {:length (s/pred pos? 'positive?)}}
  :responses    {200 ok-schema, 409 conflict-schema}}
 ```
 

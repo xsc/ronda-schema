@@ -23,10 +23,10 @@ and [`ronda.schema/wrap-schema`](https://xsc.github.io/ronda-schema/ronda.schema
 
 ```clojure
 (def schema
- {:params     {:name s/Str, :id s/Int}
-  :constraint {:params {:name (s/pred seq 'name-not-empty?)}}
-  :responses  {200 {:body s/Str
-                    :constraint {:body (s/pred seq 'body-not-empty?)}}}})
+ {:params            {:name s/Str, :id s/Int}
+  :param-constraints {:name (s/pred seq 'name-not-empty?)}
+  :responses         {200 {:body s/Str
+                           :constraint {:body (s/pred seq 'body-not-empty?)}}}})
 
 (def app
   ;; for testing purposes, we allow a key `:f` in the request
@@ -99,8 +99,8 @@ __Request Constraint Validation__
 ;;     :body ":request-constraint-failed\n{:params {:name (not (name-not-empty? \"\"))}}"
 ```
 
-If the request does not match the `:constraint` of the respective schema, a HTTP
-422 (Unprocessable) response will be returned.
+If the request does not match `:constraint` and `:param-constraints` of the
+respective schema, a HTTP 422 (Unprocessable) response will be returned.
 
 __Request Coercion__
 

@@ -4,14 +4,14 @@
   :license {:name "MIT License"
             :url "http://xsc.mit-license.org"}
   :dependencies [[org.clojure/clojure "1.7.0-beta1"]
-                 [org.clojure/tools.reader "0.9.1"]
-                 [prismatic/schema "0.4.0"]
+                 [org.clojure/tools.reader "0.9.2"]
+                 [prismatic/schema "0.4.2"]
                  [potemkin "0.3.13"]]
   :profiles {:dev {:dependencies [[midje "1.7.0-SNAPSHOT"]
                                   [org.clojure/math.combinatorics "0.1.1"]
                                   [joda-time "2.7"]]
                    :plugins [[lein-midje "3.1.3"]
-                             [codox "0.8.10"]]
+                             [codox "0.8.11"]]
                    :codox {:project {:name "ronda/schema"}
                            :src-dir-uri "https://github.com/xsc/ronda-schema/blob/master/"
                            :src-linenum-anchor-prefix "L"

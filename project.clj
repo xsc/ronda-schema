@@ -3,7 +3,7 @@
   :url "https://github.com/xsc/ronda-schema"
   :license {:name "MIT License"
             :url "http://xsc.mit-license.org"}
-  :dependencies [[org.clojure/clojure "1.7.0-beta1"]
+  :dependencies [[org.clojure/clojure "1.7.0-beta3"]
                  [org.clojure/tools.reader "0.9.2"]
                  [prismatic/schema "0.4.2"]
                  [potemkin "0.3.13"]]

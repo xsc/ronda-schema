@@ -53,10 +53,15 @@
       {:error-form (utils/error-val r)}
       {:value r})))
 
-(s/defn default-coercer-factory :- Coercer
+(defn default-coercer-factory
   "Create custom coercer from the given Schema."
-  [schema :- SchemaValue]
-  (let [f (coerce/coercer schema +custom-coercer+)]
-    (fn ronda-coercer
-      [value]
-      (coerce-value f value))))
+  ([]
+   (default-coercer-factory {}))
+  ([additional-coercions]
+   (s/fn :- Coercer
+     [schema :- SchemaValue]
+     (let [f (coerce/coercer schema (merge +custom-coercer+
+                                           additional-coercions))]
+       (fn ronda-coercer
+         [value]
+         (coerce-value f value))))))

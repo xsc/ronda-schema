@@ -45,7 +45,7 @@
     nil))
 
 (def coercing-schema
-  (compile-requests {:get request} default-coercer-factory))
+  (compile-requests {:get request} (default-coercer-factory)))
 
 ;; ## Tests
 

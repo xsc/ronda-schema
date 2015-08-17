@@ -100,7 +100,7 @@
   "Prepare the different pars of a raw request schema for
    actual validation."
   ([schema :- RawRequestSchema]
-   (compile-request-schema schema default-coercer-factory))
+   (compile-request-schema schema (default-coercer-factory)))
   ([schema          :- RawRequestSchema
     coercer-factory :- (s/maybe c/CoercerFactory)]
    (let [base (compile-base-schema schema)]
@@ -137,7 +137,7 @@
 (s/defn compile-requests :- Requests
   "Prepare requests for actual validation."
   ([schemas :- RawRequests]
-   (compile-requests schemas default-coercer-factory))
+   (compile-requests schemas (default-coercer-factory)))
   ([schemas         :- RawRequests
     coercer-factory :- (s/maybe c/CoercerFactory)]
    (if (empty? schemas)

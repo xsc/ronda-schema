@@ -39,7 +39,7 @@
    :uri    (URI. test-uri)})
 
 (def test-coercer
-  (default-coercer-factory test-schema))
+  ((default-coercer-factory) test-schema))
 
 ;; ## Tests
 

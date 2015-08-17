@@ -136,9 +136,11 @@
    (wrap-schema handler request-schema {}))
   ([handler        :- ring/Handler
     request-schema :- rq/RawRequests
-    {:keys [response? coercer]
-     :or {response? true
-          coercer   rc/default-coercer-factory}
+    {:keys [response? additional-coercions coercer]
+     :or {response?            true
+          additional-coercions {}
+          coercer              (rc/default-coercer-factory
+                                 additional-coercions)}
      :as options}
     :- Options]
    (let [schema (rq/compile-requests request-schema coercer)]

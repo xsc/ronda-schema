@@ -76,7 +76,7 @@
   "Prepare the different parts of a raw response schema for actual
    validation."
   ([schema :- RawResponseSchema]
-   (compile-response-schema schema default-coercer-factory))
+   (compile-response-schema schema (default-coercer-factory)))
   ([schema          :- RawResponseSchema
     coercer-factory :- (s/maybe c/CoercerFactory)]
    (let [base (-> schema
@@ -136,7 +136,7 @@
 (s/defn compile-responses :- Responses
   "Prepare responses for actual validation."
   ([rs :- RawResponses]
-   (compile-responses rs default-coercer-factory))
+   (compile-responses rs (default-coercer-factory)))
   ([rs :- RawResponses
     coercer-factory :- (s/maybe c/CoercerFactory)]
    (if (empty? rs)
